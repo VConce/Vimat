@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temas del Temario | Academia Vimat</title>
+  <meta name="description" content="Temario desarrollado oficial para oposiciones de Matemáticas de Secundaria.">
+  
+  <link rel="stylesheet" href="../index.css">
+  
+  <!-- MathJax Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+  <header id="main-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo" id="header-logo">
+        Vimat<span>.</span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="nav-links">
+          <li><a href="../index.html" id="nav-home">Inicio</a></li>
+          <li><a href="index.html" class="active" id="nav-temas">Temas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" style="color: var(--color-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-weight: 600;" id="back-home">
+      &larr; Volver al inicio
+    </a>
+
+    <h1 class="section-title" id="temas-title">Temas del Temario</h1>
+    <p style="color: var(--text-secondary); max-width: 800px; margin-bottom: 3rem; font-size: 1.1rem;">
+      Accede a los temas del temario oficial de oposiciones desarrollados con absoluto rigor científico. Cada tema está estructurado con introducción, justificación histórica, desarrollo de conceptos clave, teoremas con demostración rigurosa y conclusiones didácticas.
+    </p>
+
+    <div class="grid" id="temas-list">
+      <!-- Tema 1 -->
+      <article class="card analisis" id="tema-01">
+        <div>
+          <h3 class="card-title">Tema 1: Números Reales</h3>
+          <p class="card-desc">Estructura algebraica, de orden y topología de la recta real $\mathbb{R}$. Axioma del supremo, acotación y principio de Cantor.</p>
+        </div>
+        <div class="card-meta">
+          <span>Área: Álgebra/Análisis</span>
+          <span style="color: var(--color-primary); font-weight: 600;">Disponible</span>
+        </div>
+      </article>
+
+      <!-- Tema 2 -->
+      <article class="card analisis" id="tema-02">
+        <div>
+          <h3 class="card-title">Tema 23: Sucesiones y Límites</h3>
+          <p class="card-desc">Límites de funciones reales de variable real. Teoremas de continuidad en intervalos cerrados (Bolzano, Weierstrass) y diferenciabilidad.</p>
+        </div>
+        <div class="card-meta">
+          <span>Área: Análisis</span>
+          <span style="color: var(--color-primary); font-weight: 600;">Disponible</span>
+        </div>
+      </article>
+
+      <!-- Tema 3 -->
+      <article class="card analisis" id="tema-03">
+        <div>
+          <h3 class="card-title">Tema 31: Curvas en el Espacio</h3>
+          <p class="card-desc">Geometría diferencial de curvas: parametrización por arco, vector tangente, curvatura, torsión y triedro de Frenet.</p>
+        </div>
+        <div class="card-meta">
+          <span>Área: Geometría</span>
+          <span style="color: var(--color-primary); font-weight: 600;">Disponible</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ejemplo de plantilla matemática -->
+    <section class="preview-section" id="temas-preview">
+      <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem;">Ejemplo de Demostración del Temario</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Aquí podemos ver un extracto de cómo se estructuran las demostraciones de teoremas en nuestros temas teóricos:
+      </p>
+      <div class="formula-card" style="background-color: var(--bg-primary);">
+        <p style="margin-bottom: 1rem; color: var(--text-primary); line-height: 1.8;">
+          <strong>Propiedad:</strong> Toda sucesión monófona y acotada $(x_n)_{n \in \mathbb{N}}$ en $\mathbb{R}$ es convergente.<br><br>
+          <em>Demostración:</em> Supongamos sin pérdida de generalidad que la sucesión es monótona creciente y acotada superiormente. Sea $S = \{x_n \mid n \in \mathbb{N}\} \subset \mathbb{R}$. Como la sucesión está acotada superiormente, el conjunto $S$ está acotado superiormente. Por el axioma del supremo (completitud de $\mathbb{R}$), existe el supremo de $S$:
+          $$L = \sup(S)$$
+          Demostremos que $\lim_{n \to \infty} x_n = L$. Sea $\epsilon > 0$. Por definición de supremo, $L - \epsilon$ no es una cota superior de $S$, por lo que existe algún término $x_N \in S$ tal que:
+          $$x_N > L - \epsilon$$
+          Dado que la sucesión es monótona creciente, para todo $n \ge N$ se cumple que:
+          $$x_n \ge x_N > L - \epsilon$$
+          Y como $L$ es la cota superior de $S$, tenemos que $x_n \le L < L + \epsilon$ para todo $n \in \mathbb{N}$. Por tanto:
+          $$L - \epsilon < x_n < L + \epsilon \implies |x_n - L| < \epsilon \quad \forall n \ge N$$
+          Concluyendo que $\lim_{n \to \infty} x_n = L$. $\blacksquare$
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="main-footer">
+    <div class="footer-content">
+      <p id="footer-text">&copy; 2026 Academia Vimat. Todos los derechos reservados.</p>
+      <nav class="footer-nav" aria-label="Navegación del pie de página">
+        <a href="../index.html">Inicio</a>
+        <a href="index.html">Temas</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

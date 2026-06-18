@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Conocimientos previos por tema · Vimat</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --paper:#ffffff;
+      --ink:#172033;
+      --muted:#5d687e;
+      --line:#d9e1ee;
+      --blue:#164c8f;
+      --blue2:#eaf3ff;
+      --gold:#f3b13f;
+      --green:#1f7a5b;
+      --red:#a23b3b;
+      --shadow:0 10px 26px rgba(20,36,68,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#eef4ff 0%,var(--bg) 32%,#f9fbff 100%);
+      color:var(--ink);
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height:1.48;
+    }
+    header{
+      padding:42px 24px 22px;
+      background:radial-gradient(circle at 12% 15%, rgba(243,177,63,.25), transparent 24%),
+                 linear-gradient(135deg,#102b54,#164c8f 62%,#246bbd);
+      color:white;
+      border-bottom:6px solid var(--gold);
+    }
+    .wrap{max-width:1180px;margin:0 auto}
+    .brand{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+    .logo{
+      width:48px;height:48px;border-radius:50%;background:white;color:var(--blue);
+      display:grid;place-items:center;font-weight:bold;font-size:21px;box-shadow:0 6px 18px rgba(0,0,0,.18)
+    }
+    h1{font-size:clamp(30px,4vw,50px);line-height:1.05;margin:0 0 14px;font-weight:700}
+    header p{max-width:900px;margin:0;font-size:18px;color:#edf5ff}
+    main{padding:26px 24px 60px}
+    .notice{
+      background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:22px;margin:0 auto 22px;max-width:1180px;
+    }
+    h2{color:var(--blue);font-size:28px;margin:4px 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+    h3{font-size:23px;margin:0 0 10px;color:#102b54}
+    h4{font-size:18px;margin:16px 0 8px;color:#243a5c}
+    p{margin:8px 0 10px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;max-width:1180px;margin:0 auto}
+    .card{
+      grid-column:span 6;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:20px 20px 18px;position:relative;overflow:hidden;
+    }
+    .card::before{content:"";position:absolute;inset:0 0 auto 0;height:7px;background:linear-gradient(90deg,var(--blue),#48a2e8,var(--gold))}
+    .wide{grid-column:1/-1}
+    .tag{
+      display:inline-block;background:var(--blue2);color:var(--blue);border:1px solid #c9ddf5;
+      border-radius:999px;padding:4px 10px;font-size:14px;margin-bottom:10px;font-weight:bold;
+    }
+    ul{margin:7px 0 10px 22px;padding:0}
+    li{margin:4px 0}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .box{
+      background:#f8fbff;border:1px solid var(--line);border-radius:14px;padding:13px 15px;
+    }
+    .box.good{background:#f3fbf7;border-color:#c8e6d7}
+    .box.warn{background:#fff8ea;border-color:#f0d19a}
+    .box.bad{background:#fff4f4;border-color:#e3b7b7}
+    .small{font-size:14px;color:var(--muted)}
+    .formula{
+      font-family: Cambria Math, 'Times New Roman', serif;background:#f1f6ff;border-left:4px solid var(--blue);
+      padding:10px 12px;border-radius:10px;margin:10px 0;overflow:auto;
+    }
+    .toc{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+    .toc a{color:#073c78;background:white;text-decoration:none;border:1px solid rgba(255,255,255,.55);border-radius:999px;padding:7px 11px;font-size:14px}
+    .toc a:hover{background:#eaf3ff}
+    .checklist li::marker{color:var(--green)}
+    .risk li::marker{color:var(--red)}
+    .footer{max-width:1180px;margin:24px auto 0;color:var(--muted);font-size:14px;text-align:center}
+    @media (max-width:900px){.card{grid-column:1/-1}.two{grid-template-columns:1fr}header{padding-top:30px}}
+    @media print{
+      header{background:white;color:black;border-bottom:2px solid black;padding:18px 0}.logo{border:1px solid black;box-shadow:none}header p{color:black}
+      main{padding:12px 0}.card,.notice{box-shadow:none;border-color:#777;break-inside:avoid}.card::before{background:#777}.toc{display:none}
+      body{background:white}.wrap,.grid,.notice,.footer{max-width:100%}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="brand"><div class="logo">V</div><div><strong>Vimat</strong><br><span class="small" style="color:#dcecff">Oposiciones de Matemáticas · Bloques previos</span></div></div>
+      <h1>Conocimientos previos por tema</h1>
+      <p>Bloques breves para colocar al inicio de cada tema o como lectura previa. Están pensados para alumnado que sabe calcular, pero necesita fijar lenguaje, definiciones y matices matemáticos antes de entrar en una exposición formal.</p>
+      <nav class="toc">
+        <a href="#diagnostico">Diagnóstico del bloque inicial</a>
+        <a href="#t03">Tema 03</a>
+        <a href="#t08">Tema 08</a>
+        <a href="#t09">Tema 09</a>
+        <a href="#t16">Tema 16</a>
+        <a href="#t18">Tema 18</a>
+        <a href="#t21">Tema 21</a>
+        <a href="#t22">Tema 22</a>
+        <a href="#t23">Tema 23</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="notice" id="diagnostico">
+      <h2>Comentario sobre tu bloque inicial para el Tema 03</h2>
+      <p>El enfoque me parece muy acertado para el perfil que describes: ingenieros, arquitectos, físicos o graduados con mucha práctica de cálculo, pero poca costumbre de vigilar dominio, codominio, imagen, cuantificadores, notación y dependencias lógicas.</p>
+      <div class="two">
+        <div class="box good">
+          <h3>Lo que mantendría</h3>
+          <ul class="checklist">
+            <li>La aclaración de la convención sobre los naturales, tomando 0 como natural.</li>
+            <li>El bloque sobre aplicaciones inyectivas, sobreyectivas y biyectivas antes de combinatoria.</li>
+            <li>Los ejemplos con funciones sencillas, porque ayudan a ver que no todo es “hacer cuentas”.</li>
+            <li>La advertencia implícita de que una función no es solo una fórmula: también importan dominio y conjunto de llegada.</li>
+          </ul>
+        </div>
+        <div class="box warn">
+          <h3>Lo que matizaría</h3>
+          <ul class="risk">
+            <li>Usaría “conjunto de llegada” o “codominio” y reservaría “imagen” para los valores realmente alcanzados.</li>
+            <li>Diría que la inyectividad o sobreyectividad depende de dominio y codominio. Por ejemplo, x² de ℝ en ℝ no es sobreyectiva, pero de ℝ en [0,+∞) sí lo es.</li>
+            <li>Evitaría expresiones como “2 acaba en 4” y escribiría “2 y −2 tienen la misma imagen”.</li>
+            <li>Para naturales positivos, mejor usar ℕ* o ℤ&gt;0 en vez de ℤ⁺, porque esta última notación cambia según autores.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="formula">Nota recomendable: “En estos apuntes tomaremos ℕ = {0,1,2,3,...}. Cuando escribamos A = {a₁,...,aₙ}, los subíndices son etiquetas de enumeración, no una negación de la convención anterior.”</div>
+    </section>
+
+    <section class="grid">
+      <article class="card wide" id="t03">
+        <span class="tag">Tema 03 · Combinatoria</span>
+        <h3>Conocimientos previos recomendables</h3>
+        <div class="two">
+          <div class="box">
+            <h4>Lenguaje mínimo</h4>
+            <ul>
+              <li>Conjuntos finitos, pertenencia, subconjunto, cardinal y conjunto vacío.</li>
+              <li>Distinción entre conjunto y lista ordenada: {a,b,c} frente a (a,b,c).</li>
+              <li>Producto cartesiano y n-tuplas.</li>
+              <li>Aplicaciones: dominio, codominio, imagen y regla de correspondencia.</li>
+              <li>Inyectiva, sobreyectiva y biyectiva, siempre fijando dominio y codominio.</li>
+              <li>Convención sobre ℕ, dejando claro que aquí 0 ∈ ℕ.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <h4>Herramientas técnicas</h4>
+            <ul>
+              <li>Principios de suma y producto.</li>
+              <li>Factorial, con 0! = 1.</li>
+              <li>Manipulación de productos descendentes: n(n−1)…(n−m+1).</li>
+              <li>Números combinatorios y simetría básica.</li>
+              <li>Idea de demostración por conteo doble.</li>
+              <li>Uso elemental de “si y solo si”.</li>
+            </ul>
+          </div>
+        </div>
+        <h4>Riesgos típicos del opositor</h4>
+        <ul class="risk">
+          <li>Contar dos veces por no distinguir ordenado/no ordenado.</li>
+          <li>Confundir variaciones con combinaciones porque se mira “qué elementos hay” y no “en qué posiciones están”.</li>
+          <li>Usar fórmulas sin comprobar si hay repetición, orden o agotamiento de elementos.</li>
+          <li>Olvidar que las variaciones sin repetición son aplicaciones inyectivas desde el conjunto de posiciones.</li>
+        </ul>
+      </article>
+
+      <article class="card" id="t08">
+        <span class="tag">Tema 08 · Sucesiones</span>
+        <h3>Bloque previo</h3>
+        <ul>
+          <li>Una sucesión como aplicación de ℕ, o de ℕ*, en un conjunto numérico.</li>
+          <li>Diferencia entre aₙ como término y la sucesión completa (aₙ).</li>
+          <li>Índice inicial: sucesiones que empiezan en n=0 frente a n=1.</li>
+          <li>Notación explícita, recurrente y por comprensión.</li>
+          <li>Sumatorio y productorio: lectura, cambio de índice y primeros ejemplos.</li>
+          <li>Progresiones aritméticas y geométricas como modelos básicos.</li>
+          <li>Monotonía, acotación y noción intuitiva de límite.</li>
+          <li>Principio de inducción matemática.</li>
+        </ul>
+        <h4>Advertencia útil</h4>
+        <div class="formula">El índice n no es “la variable real x”. En una sucesión, el dominio es discreto: se miran posiciones, no todos los puntos de una recta.</div>
+      </article>
+
+      <article class="card" id="t09">
+        <span class="tag">Tema 09 · Números complejos</span>
+        <h3>Bloque previo</h3>
+        <ul>
+          <li>Necesidad de ampliar ℝ para resolver ecuaciones como x²+1=0.</li>
+          <li>El símbolo i como número con i² = −1.</li>
+          <li>Operaciones algebraicas con potencias, raíces y fracciones.</li>
+          <li>Plano cartesiano, pares ordenados y vectores de ℝ².</li>
+          <li>Módulo como distancia al origen.</li>
+          <li>Trigonometría elemental: seno, coseno, tangente, circunferencia unidad y radianes.</li>
+          <li>Argumento de un complejo y cuidado con el cuadrante.</li>
+          <li>Forma binómica, polar y trigonométrica.</li>
+        </ul>
+        <h4>Riesgo típico</h4>
+        <div class="formula">El argumento no es único: si θ es un argumento, también lo es θ + 2kπ.</div>
+      </article>
+
+      <article class="card" id="t16">
+        <span class="tag">Tema 16 · Discusión de sistemas lineales</span>
+        <h3>Bloque previo</h3>
+        <ul>
+          <li>Diferencia entre ecuación, incógnita, parámetro y solución.</li>
+          <li>Conjunto solución: no es lo mismo una solución que el conjunto de todas las soluciones.</li>
+          <li>Sistemas compatibles determinados, compatibles indeterminados e incompatibles.</li>
+          <li>Operaciones elementales con ecuaciones.</li>
+          <li>Notación matricial básica de un sistema.</li>
+          <li>Idea de rango como número de ecuaciones independientes.</li>
+          <li>Interpretación geométrica: rectas, planos e intersecciones.</li>
+          <li>Partición de casos según el valor de un parámetro.</li>
+        </ul>
+        <h4>Advertencia útil</h4>
+        <div class="formula">Discutir un sistema no es resolverlo una vez: es clasificar qué ocurre para todos los valores posibles de los parámetros.</div>
+      </article>
+
+      <article class="card" id="t18">
+        <span class="tag">Tema 18 · Matrices</span>
+        <h3>Bloque previo</h3>
+        <ul>
+          <li>Matriz como tabla de números y como objeto con dimensiones.</li>
+          <li>Filas, columnas, entradas aᵢⱼ y orden de una matriz.</li>
+          <li>Operaciones: suma, producto por escalar y producto de matrices.</li>
+          <li>Compatibilidad de dimensiones en el producto.</li>
+          <li>No conmutatividad: en general, AB ≠ BA.</li>
+          <li>Matriz identidad, matriz nula y matriz inversa.</li>
+          <li>Transposición y simetría.</li>
+          <li>Relación entre matrices, sistemas lineales y aplicaciones lineales.</li>
+        </ul>
+        <h4>Riesgo típico</h4>
+        <div class="formula">El producto AB solo existe si el número de columnas de A coincide con el número de filas de B.</div>
+      </article>
+
+      <article class="card" id="t21">
+        <span class="tag">Tema 21 · Funciones reales de variable real</span>
+        <h3>Bloque previo</h3>
+        <ul>
+          <li>Función como aplicación f: A → B, no solo como fórmula.</li>
+          <li>Dominio, codominio, imagen y gráfica.</li>
+          <li>Intervalos de ℝ y notación con desigualdades.</li>
+          <li>Composición de funciones e inversa.</li>
+          <li>Inyectividad, sobreyectividad y biyectividad.</li>
+          <li>Restricción de dominio y cambio de codominio.</li>
+          <li>Operaciones con funciones: suma, producto, cociente y composición.</li>
+          <li>Familias elementales: polinómicas, racionales, radicales, exponenciales, logarítmicas y trigonométricas.</li>
+        </ul>
+        <h4>Advertencia útil</h4>
+        <div class="formula">La misma fórmula puede definir funciones distintas si cambia el dominio o el codominio.</div>
+      </article>
+
+      <article class="card" id="t22">
+        <span class="tag">Tema 22 · Funciones exponenciales y logarítmicas</span>
+        <h3>Bloque previo</h3>
+        <ul>
+          <li>Potencias con exponente entero, racional y real.</li>
+          <li>Leyes de los exponentes y sus condiciones de uso.</li>
+          <li>Base positiva y distinta de 1 en una función exponencial general.</li>
+          <li>Logaritmo como función inversa de una exponencial.</li>
+          <li>Dominio del logaritmo: solo argumentos positivos en el caso real.</li>
+          <li>Cambio de base.</li>
+          <li>Monotonía según la base sea mayor o menor que 1.</li>
+          <li>Resolución de ecuaciones e inecuaciones exponenciales y logarítmicas.</li>
+        </ul>
+        <h4>Riesgo típico</h4>
+        <div class="formula">log(a+b) no es log(a)+log(b). Las propiedades del logaritmo se aplican a productos, cocientes y potencias, no a sumas.</div>
+      </article>
+
+      <article class="card" id="t23">
+        <span class="tag">Tema 23 · Funciones circulares e hiperbólicas</span>
+        <h3>Bloque previo</h3>
+        <ul>
+          <li>Medida de ángulos en radianes y relación con grados.</li>
+          <li>Circunferencia unidad y definición de seno y coseno.</li>
+          <li>Periodicidad, simetrías y signos por cuadrantes.</li>
+          <li>Identidades fundamentales trigonométricas.</li>
+          <li>Funciones trigonométricas inversas y elección de ramas.</li>
+          <li>Definición de funciones hiperbólicas mediante exponenciales.</li>
+          <li>Identidades hiperbólicas básicas.</li>
+          <li>Analogías y diferencias entre funciones circulares e hiperbólicas.</li>
+        </ul>
+        <h4>Advertencia útil</h4>
+        <div class="formula">Las inversas trigonométricas no deshacen globalmente a las trigonométricas: primero hay que restringir dominio para que la función sea biyectiva.</div>
+      </article>
+
+      <article class="card wide">
+        <span class="tag">Plantilla común</span>
+        <h3>Estructura recomendable para cada bloque inicial</h3>
+        <div class="two">
+          <div class="box">
+            <h4>1. Convenciones</h4>
+            <p>Notaciones que vas a usar en el tema: ℕ, índices, intervalos, matrices, dominios, etc.</p>
+            <h4>2. Vocabulario</h4>
+            <p>Definiciones mínimas que el lector debe poder leer sin detenerse cada dos líneas.</p>
+          </div>
+          <div class="box">
+            <h4>3. Matices peligrosos</h4>
+            <p>Errores habituales que arrastran alumnos que saben calcular, pero no formalizar.</p>
+            <h4>4. Ejemplo sencillo</h4>
+            <p>Un ejemplo de 3 o 4 líneas que permita comprobar si se ha entendido el lenguaje.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+    <div class="footer">Documento de trabajo · Bloques previos para temas de oposiciones de Matemáticas · Vimat</div>
+  </main>
+</body>
+</html>

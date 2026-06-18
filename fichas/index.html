@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fichas de Trabajo | Academia Vimat</title>
+  <meta name="description" content="Fichas de ejercicios prácticos, resúmenes y colecciones de problemas para oposiciones de matemáticas.">
+  
+  <link rel="stylesheet" href="../index.css">
+  
+  <!-- MathJax Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+  <header id="main-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo" id="header-logo">
+        Vimat<span>.</span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="nav-links">
+          <li><a href="../index.html" id="nav-home">Inicio</a></li>
+          <li><a href="index.html" class="active" id="nav-fichas">Fichas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" style="color: var(--color-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-weight: 600;" id="back-home">
+      &larr; Volver al inicio
+    </a>
+
+    <h1 class="section-title" id="fichas-title" style="--color-primary: var(--color-secondary);">Fichas de Trabajo</h1>
+    <p style="color: var(--text-secondary); max-width: 800px; margin-bottom: 3rem; font-size: 1.1rem;">
+      Descarga y practica con nuestras fichas de problemas. Contienen colecciones de ejercicios resueltos paso a paso por niveles de dificultad, con énfasis en el bloque práctico de la oposición.
+    </p>
+
+    <div class="grid" id="fichas-list">
+      <!-- Ficha 1 -->
+      <article class="card geometria" id="ficha-01">
+        <div>
+          <h3 class="card-title">Ficha 1: Topología y Límites</h3>
+          <p class="card-desc">Ejercicios sobre conjuntos compactos, conexos, y cálculo avanzado de límites indeterminados mediante desarrollos en serie de Taylor.</p>
+        </div>
+        <div class="card-meta">
+          <span>Práctica: Análisis</span>
+          <span style="color: var(--color-secondary); font-weight: 600;">Disponible</span>
+        </div>
+      </article>
+
+      <!-- Ficha 2 -->
+      <article class="card geometria" id="ficha-02">
+        <div>
+          <h3 class="card-title">Ficha 2: Geometría Diferencial</h3>
+          <p class="card-desc">Cálculo de curvatura, torsión, triedro de Frenet de hélices y curvas parametrizadas genéricas. Cálculo de áreas y formas cuadráticas.</p>
+        </div>
+        <div class="card-meta">
+          <span>Práctica: Geometría</span>
+          <span style="color: var(--color-secondary); font-weight: 600;">Disponible</span>
+        </div>
+      </article>
+
+      <!-- Ficha 3 -->
+      <article class="card geometria" id="ficha-03">
+        <div>
+          <h3 class="card-title">Ficha 3: Cónicas y Cuádricas</h3>
+          <p class="card-desc">Clasificación afín y métrica de cónicas y superficies cuádricas. Determinación de elementos geométricos notables (ejes, planos de simetría).</p>
+        </div>
+        <div class="card-meta">
+          <span>Práctica: Álgebra/Geometría</span>
+          <span style="color: var(--color-secondary); font-weight: 600;">Disponible</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ejemplo de ejercicio práctico -->
+    <section class="preview-section" id="fichas-preview">
+      <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem;">Ejemplo de Problema Resuelto</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        <strong>Problema:</strong> Hallar el Triedro de Frenet ($\mathbf{T}, \mathbf{N}, \mathbf{B}$) de la hélice cilíndrica parametrizada por $\alpha(t) = (a\cos t, a\sin t, bt)$ con $a, b > 0$.
+      </p>
+      <div class="formula-card" style="background-color: var(--bg-primary);">
+        <p style="margin-bottom: 1rem; color: var(--text-primary); line-height: 1.8;">
+          1. <strong>Vector velocidad:</strong> $\alpha'(t) = (-a\sin t, a\cos t, b)$. La celeridad es $s'(t) = \|\alpha'(t)\| = \sqrt{a^2\sin^2 t + a^2\cos^2 t + b^2} = \sqrt{a^2+b^2} = c$.<br><br>
+          2. <strong>Vector Tangente unitario ($\mathbf{T}$):</strong> 
+          $$\mathbf{T}(t) = \frac{\alpha'(t)}{\|\alpha'(t)\|} = \frac{1}{c}(-a\sin t, a\cos t, b)$$
+          3. <strong>Vector Normal unitario ($\mathbf{N}$):</strong> Calculamos $\mathbf{T}'(t) = \frac{1}{c}(-a\cos t, -a\sin t, 0)$. Como $\|\mathbf{T}'(t)\| = \frac{a}{c}$, el vector normal principal es:
+          $$\mathbf{N}(t) = \frac{\mathbf{T}'(t)}{\|\mathbf{T}'(t)\|} = (-\cos t, -\sin t, 0)$$
+          4. <strong>Vector Binormal unitario ($\mathbf{B}$):</strong> Mediante el producto vectorial $\mathbf{B} = \mathbf{T} \times \mathbf{N}$:
+          $$\mathbf{B}(t) = \frac{1}{c} \begin{vmatrix} \mathbf{i} & \mathbf{j} & \mathbf{k} \\ -a\sin t & a\cos t & b \\ -\cos t & -\sin t & 0 \end{vmatrix} = \frac{1}{c} (b\sin t, -b\cos t, a)$$
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="main-footer">
+    <div class="footer-content">
+      <p id="footer-text">&copy; 2026 Academia Vimat. Colección de Fichas Prácticas.</p>
+      <nav class="footer-nav" aria-label="Navegación del pie de página">
+        <a href="../index.html">Inicio</a>
+        <a href="index.html">Fichas</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

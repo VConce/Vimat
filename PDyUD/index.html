@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PD y UD (Didáctica) | Academia Vimat</title>
+  <meta name="description" content="Programación Didáctica y Unidades Didácticas LOMLOE para la Comunidad de Madrid.">
+  
+  <link rel="stylesheet" href="../index.css">
+  
+  <!-- MathJax Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+  <header id="main-header">
+    <div class="header-container">
+      <a href="../index.html" class="logo" id="header-logo">
+        Vimat<span>.</span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="nav-links">
+          <li><a href="../index.html" id="nav-home">Inicio</a></li>
+          <li><a href="index.html" class="active" id="nav-pdyud">PD y UD</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" style="color: var(--color-accent); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-weight: 600;" id="back-home">
+      &larr; Volver al inicio
+    </a>
+
+    <h1 class="section-title" id="pdyud-title" style="--color-primary: var(--color-accent);">PD y UD (Didáctica LOMLOE)</h1>
+    <p style="color: var(--text-secondary); max-width: 800px; margin-bottom: 3rem; font-size: 1.1rem;">
+      Programación Didáctica (PD) y Unidades Didácticas (UD) configuradas para cumplir con la LOMLOE en la Comunidad de Madrid (Decretos 65/2022 y 64/2022). Aquí encontrarás la metodología activa, el diseño de Situaciones de Aprendizaje y las rúbricas evaluativas.
+    </p>
+
+    <div class="grid" id="pdyud-list">
+      <!-- PD -->
+      <article class="card didactica" id="pd-docs">
+        <div>
+          <h3 class="card-title">Programación Didáctica (PD)</h3>
+          <p class="card-desc">Estructura del documento de la Programación: contextualización, objetivos generales, competencias específicas, saberes básicos transversales, metodologías activas y evaluación competencial.</p>
+        </div>
+        <div class="card-meta">
+          <span>Curso: ESO / Bachillerato</span>
+          <span style="color: var(--color-accent); font-weight: 600;">Estructura</span>
+        </div>
+      </article>
+
+      <!-- UD -->
+      <article class="card didactica" id="ud-docs">
+        <div>
+          <h3 class="card-title">Unidades Didácticas (UD)</h3>
+          <p class="card-desc">Desglose de las 10 a 15 Unidades Didácticas obligatorias. Temporalización, distribución de sesiones y metodologías específicas.</p>
+        </div>
+        <div class="card-meta">
+          <span>Temporalización</span>
+          <span style="color: var(--color-accent); font-weight: 600;">Esquema</span>
+        </div>
+      </article>
+
+      <!-- SA -->
+      <article class="card didactica" id="sa-docs">
+        <div>
+          <h3 class="card-title">Situaciones de Aprendizaje (SA)</h3>
+          <p class="card-desc">Guías de diseño didáctico para Situaciones de Aprendizaje reales: motivación, análisis del contexto, retos planteados, saberes básicos implicados y transferencia de conocimiento.</p>
+        </div>
+        <div class="card-meta">
+          <span>Enfoque LOMLOE</span>
+          <span style="color: var(--color-accent); font-weight: 600;">Plantillas</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Ejemplo didáctico -->
+    <section class="preview-section" id="pdyud-preview">
+      <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem;">Definición Curricular LOMLOE</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Esquema metodológico de la evaluación competencial: los criterios de evaluación de cada Competencia Específica determinan si el alumno ha adquirido los descriptores del Perfil de Salida al finalizar el ciclo.
+      </p>
+      <div class="formula-card" style="background-color: var(--bg-primary);">
+        <p style="margin-bottom: 1rem; color: var(--text-primary); line-height: 1.8;">
+          <strong>Esquema Operativo en Madrid:</strong>
+          $$\text{Perfil de Salida (Descriptores STEM)} \longleftarrow \text{Competencias Específicas} \longleftarrow \text{Criterios de Evaluación} \longleftarrow \text{Evidencias (Actividades/Proyectos)}$$
+          $$\text{Saberes Básicos} = \text{Herramientas para resolver el reto}$$
+          Este alineamiento pedagógico debe justificarse de manera transparente tanto en el documento escrito como en la defensa oral ante el tribunal de oposiciones.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="main-footer">
+    <div class="footer-content">
+      <p id="footer-text">&copy; 2026 Academia Vimat. Bloque de Didáctica y Programaciones.</p>
+      <nav class="footer-nav" aria-label="Navegación del pie de página">
+        <a href="../index.html">Inicio</a>
+        <a href="index.html">PD y UD</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,487 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisión de fichas Vimat</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)'], ['$', '$']], displayMath: [['\\[','\\]']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --ink: #132238;
+  --muted: #5f6c7b;
+  --line: #d9e2ef;
+  --blue: #1d5d9b;
+  --blue2: #2f80c5;
+  --ok: #16794f;
+  --warn: #a46500;
+  --bad: #b42318;
+  --crit: #7f1d1d;
+  --shadow: 0 8px 22px rgba(21, 37, 62, .08);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, #eaf2fb 0, var(--bg) 260px);
+}
+header {
+  padding: 28px 28px 18px;
+  background: linear-gradient(135deg, #124b7d, #2f80c5);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+header h1 { margin: 0 0 8px; font-size: clamp(1.4rem, 2.4vw, 2.2rem); }
+header p { margin: 0; color: rgba(255,255,255,.9); max-width: 1100px; }
+.wrapper { max-width: 1320px; margin: 0 auto; padding: 20px; }
+.toolbar {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto auto;
+  gap: 12px;
+  align-items: end;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+label { display: block; font-size: .82rem; color: var(--muted); margin-bottom: 4px; }
+select, input[type="search"], textarea, input[type="file"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  background: #fff;
+  color: var(--ink);
+}
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--blue);
+  color: #fff;
+}
+button.secondary { background: #eef4fb; color: var(--blue); border: 1px solid #cfe1f4; }
+button.ghost { background: transparent; color: var(--blue); border: 1px solid var(--line); }
+button.done { background: var(--ok); }
+button.undo { background: #fff; color: var(--ok); border: 1px solid #a9d6c2; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+.stat strong { display: block; font-size: 1.8rem; }
+.stat span { color: var(--muted); font-size: .88rem; }
+.layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; }
+aside {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  align-self: start;
+  position: sticky;
+  top: 104px;
+  box-shadow: var(--shadow);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+aside h2 { margin: 0 0 12px; font-size: 1rem; }
+.themeButton {
+  width: 100%;
+  text-align: left;
+  background: #f7fbff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  margin: 4px 0;
+  border-radius: 12px;
+  padding: 9px 10px;
+  font-weight: 600;
+}
+.themeButton.active { background: #dfeeff; color: #0b4c84; border-color: #9fc7ed; }
+.themeButton small { float: right; color: var(--muted); font-weight: 700; }
+.globalNotes { margin-top: 14px; }
+.cards { display: grid; gap: 12px; }
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--blue2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.card.reviewed { opacity: .68; border-left-color: var(--ok); }
+.card[data-priority="Crítica"] { border-left-color: var(--crit); }
+.card[data-priority="Alta"] { border-left-color: var(--bad); }
+.card[data-priority="Media"] { border-left-color: var(--warn); }
+.card[data-priority="Baja"] { border-left-color: #6b7280; }
+details.card > summary {
+  cursor: pointer;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  list-style: none;
+}
+details.card > summary::-webkit-details-marker { display: none; }
+.title { font-weight: 800; font-size: 1.02rem; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: .76rem;
+  font-weight: 700;
+  background: #eef2f7;
+  color: #334155;
+}
+.badge.crit { background: #fee2e2; color: var(--crit); }
+.badge.high { background: #ffebe9; color: var(--bad); }
+.badge.medium { background: #fff4d6; color: var(--warn); }
+.badge.low { background: #eef2f7; color: #475569; }
+.where { color: var(--muted); font-size: .9rem; text-align: right; }
+.content { padding: 0 16px 16px; border-top: 1px solid var(--line); }
+.box {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+}
+.box h3 { margin: 0 0 6px; font-size: .92rem; color: #334155; }
+.box p { margin: 0; line-height: 1.45; white-space: pre-wrap; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+.notes { min-height: 80px; resize: vertical; }
+.empty {
+  text-align: center;
+  padding: 38px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  color: var(--muted);
+  background: rgba(255,255,255,.7);
+}
+.footer { color: var(--muted); margin: 22px 0 8px; font-size: .88rem; }
+.switch { display:flex; gap:8px; align-items:center; white-space: nowrap; margin-bottom: 8px; }
+.switch input { width: auto; }
+.hidden { display:none !important; }
+@media (max-width: 900px) {
+  .toolbar { grid-template-columns: 1fr; position: static; }
+  .layout { grid-template-columns: 1fr; }
+  aside { position: static; max-height: none; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .where { text-align: left; }
+  details.card > summary { grid-template-columns: 1fr; }
+}
+@media print {
+  header, .toolbar, aside, .actions, .globalNotes { display:none !important; }
+  .wrapper { padding: 0; }
+  .layout { display:block; }
+  .card { box-shadow:none; break-inside: avoid; }
+  details.card { display:block; }
+  details.card > summary { display:block; }
+  details.card[open] .content, .content { display:block; }
+}
+
+.viewToggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.viewToggles button { border-radius: 10px; }
+.layout.sidebar-collapsed { grid-template-columns: 1fr; }
+.layout.sidebar-collapsed aside { display: none; }
+.toolbar.toolbar-collapsed { display: none; }
+@media print { .viewToggles { display:none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Revisión de fichas Vimat</h1>
+  <p>Panel de revisión de fichas con observaciones localizadas, prioridades, notas, marcado de progreso, fórmulas con MathJax e importación/exportación JSON.</p>
+</header>
+<div class="wrapper">
+  <div class="viewToggles">
+    <button id="toggleToolbarBtn" class="secondary" type="button">Contraer filtros</button>
+    <button id="toggleSidebarBtn" class="secondary" type="button">Contraer menu izquierdo</button>
+  </div>
+  <section class="toolbar" id="toolbarPanel">
+    <div>
+      <label for="themeSelect">Filtrar por ficha</label>
+      <select id="themeSelect"></select>
+    </div>
+    <div>
+      <label for="searchBox">Buscar en sugerencias</label>
+      <input id="searchBox" type="search" placeholder="p. ej. Taylor, derivada, errata...">
+    </div>
+    <div>
+      <label for="typeSelect">Tipo</label>
+      <select id="typeSelect"></select>
+    </div>
+    <button id="expandAllBtn" class="secondary" type="button">Expandir</button><button id="collapseAllBtn" class="secondary" type="button">Contraer</button><button id="exportBtn">Exportar progreso</button>
+    <button id="importBtn" class="secondary">Importar JSON</button>
+    <input id="importFile" class="hidden" type="file" accept="application/json,.json">
+  </section>
+
+  <section class="stats" id="stats"></section>
+
+  <div class="layout" id="reviewLayout">
+    <aside>
+      <h2>Fichas</h2><button id="toggleThemes" class="secondary" type="button" style="width:100%;margin-bottom:8px">Contraer fichas</button>
+      <div class="switch"><input type="checkbox" id="showReviewed"><label for="showReviewed">Mostrar revisadas</label></div>
+      <div id="themeList"></div>
+      <div class="globalNotes">
+        <label for="globalNotes">Notas generales de esta revisión</label>
+        <textarea id="globalNotes" class="notes" placeholder="Anota aquí cambios globales, discrepancias o decisiones de estilo..."></textarea>
+      </div>
+    </aside>
+    <main>
+      <div id="cards" class="cards"></div>
+      <p class="footer">Generado el 2026-06-17 09:44. Estado guardado automáticamente en este navegador mediante localStorage.</p>
+    </main>
+  </div>
+</div>
+
+<script>
+const SUGGESTIONS = [{"id":"GLOBAL-01","theme":"Global","file":"Global","page":"—","loc":"","type":"Maquetación","priority":"Media","title":"No he detectado caracteres de sustitución en el texto extraído","snippet":"","issue":"La revisión automática no muestra caracteres tipo � o “Math input error”. Aun así, algunas fórmulas pueden estar incrustadas como imagen y no salir en la extracción.","suggestion":"Antes de imprimir, hacer un pase visual rápido solo de fórmulas largas y determinantes."},{"id":"GLOBAL-02","theme":"Global","file":"Global","page":"—","loc":"","type":"Sugerencia","priority":"Media","title":"Fichas 0 como teoría y fichas 1/2 como oposición","snippet":"","issue":"La estructura general tiene sentido. Donde el enunciado de oposición es defectuoso, lo mejor es no tocarlo y poner nota en la solución.","suggestion":"Mantener el criterio actual: enunciado literal + nota aclaratoria."},{"id":"GLOBAL-03","theme":"Global","file":"Global","page":"—","loc":"","type":"Maquetación","priority":"Baja","title":"Infografías de VConce dentro de fichas","snippet":"","issue":"Las infografías son útiles, pero varias están rasterizadas y con letra pequeña.","suggestion":"Para versión alumnos, quizá basta; para imprimir en alta calidad, conservar los originales PNG/PDF de máxima resolución."},{"id":"A0-01","theme":"A0","file":"A0","page":2,"loc":"","type":"Matemático","priority":"Media","title":"Dirichlet/Thomae: aclarar constantes p, q","snippet":"","issue":"En la definición de Dirichlet aparecen p y q como valores constantes, pero visualmente puede confundirse con el p/q de la función de Thomae.","suggestion":"Añadir una frase: “en Dirichlet, p y q son dos constantes distintas; en Thomae, p/q es la fracción irreducible del racional”."},{"id":"A0-03","theme":"A0","file":"A0","page":4,"loc":"","type":"Maquetación","priority":"Baja","title":"Infografía de funciones algo pixelada","snippet":"","issue":"La infografía de la página 4 se ve útil, pero para imprimir quizá pierde nitidez frente al resto del documento.","suggestion":"Si va a impresión final, usar la versión de máxima resolución o vectorizarla."},{"id":"A0-02","theme":"A0","file":"A0","page":5,"loc":"","type":"Redacción","priority":"Baja","title":"Debate sobre continuidad de 1/x","snippet":"","issue":"La frase “1/x es una función continua” es correcta solo entendida como función sobre su dominio natural, pero puede chocar con alumnado que piensa en ℝ.","suggestion":"Añadir “continua en su dominio, ℝ\\{0}”."},{"id":"A1-01","theme":"A1","file":"A1","page":1,"loc":"","type":"Sugerencia","priority":"Baja","title":"Ficha A1 empieza con ejercicios largos","snippet":"","issue":"El bloque A1 entra pronto en problemas completos de oposición; es lógico, pero puede intimidar al alumno que viene de A0.","suggestion":"Opcional: añadir una nota breve tipo “usa la plantilla de A0; no todos los apartados deben salir a la primera”."},{"id":"A1-02","theme":"A1","file":"A1","page":5,"loc":"","type":"Redacción","priority":"Baja","title":"Curva de Agnesi: parametrización/constante","snippet":"","issue":"En la nota de Agnesi conviene que quede claro qué parámetro a se está usando, porque la función del ejercicio no está en la forma estándar habitual.","suggestion":"Añadir “para cierto valor de a” o dejar solo como nota cultural sin fórmula si no aporta al ejercicio."},{"id":"A2-01","theme":"A2","file":"A2","page":1,"loc":"","type":"Maquetación","priority":"Media","title":"Radical exterior de Ast21 puede leerse ambiguo","snippet":"","issue":"En el enunciado de Ast21, visualmente puede confundirse si la raíz exterior cubre todo “4 + √(...)” o solo el 4. La solución asume que cubre todo.","suggestion":"Revisar el radical en el Word/PDF y alargar la barra de la raíz exterior si hace falta."},{"id":"A2-02","theme":"A2","file":"A2","page":3,"loc":"","type":"Maquetación","priority":"Baja","title":"Gráfica de Ast21 con poco margen vertical","snippet":"","issue":"La gráfica de la solución queda correcta, pero en impresión puede verse pequeña para una función definida a trozos.","suggestion":"Opcional: ampliar un poco la gráfica o dejarla con menos texto alrededor."},{"id":"B0-01","theme":"B0","file":"B0","page":4,"loc":"","type":"Maquetación","priority":"Baja","title":"Infografía B0 con detalles muy pequeños","snippet":"","issue":"La infografía de continuidad y derivabilidad contiene mucha información; en A4 queda muy comprimida.","suggestion":"Para alumnos, mantener; para impresión grande, usar versión A3/A2 o añadir enlace/QR a alta resolución."},{"id":"B0-03","theme":"B0","file":"B0","page":"7","loc":"Parte baja de la página 7 - Ambito: Teoría","type":"Precisión matemática","priority":"Media","title":"Demostración de L’Hôpital demasiado esquemática","snippet":"","issue":"La demostración esquemática de L’Hôpital usa c∈(x,x0) y luego pasa al límite. La idea es correcta para una ficha, pero conviene explicitar que c depende de x y que c→x0 por encaje cuando x→x0.","suggestion":"Añadir una frase: “como c=c(x) está entre x y x0, al tender x a x0 también c(x) tiende a x0”."},{"id":"B0-02","theme":"B0","file":"B0","page":12,"loc":"","type":"Sugerencia","priority":"Media","title":"Definición ε-δ: buenos ejercicios, pero falta aviso de estrategia","snippet":"","issue":"Los ejercicios 12-14 son correctos, pero para alumnos de oposición puede ser útil distinguir “prueba directa” y “contraejemplo al falso límite”.","suggestion":"Añadir una línea de estrategia antes de las soluciones, si cabe."},{"id":"B1-02","theme":"B1","file":"B1","page":1,"loc":"","type":"Sugerencia","priority":"Baja","title":"Cauchy: aclarar versión usada","snippet":"","issue":"El ejercicio Can00 usa la forma general del TVM de Cauchy; algunos textos exigen g(b)≠g(a) para escribir el cociente.","suggestion":"Añadir “usamos la versión sin dividir por g(b)-g(a)”."},{"id":"B1-01","theme":"B1","file":"B1","page":3,"loc":"","type":"Errata","priority":"Baja","title":"“existe un valor en (a>0)”","snippet":"","issue":"En MallMen25 aparece “Demuestra que existe un valor en (a > 0)…”; sobra “en”.","suggestion":"Cambiar por “existe un valor a > 0”."},{"id":"B2-02","theme":"B2","file":"B2","page":4,"loc":"","type":"Maquetación","priority":"Baja","title":"Imagen de Euler-Mascheroni algo cargada","snippet":"","issue":"La imagen es útil, pero tiene mucho texto pequeño dentro de la ficha.","suggestion":"Si se imprime en A4, valorar reducirla o sustituirla por una imagen más limpia."},{"id":"B2-01","theme":"B2","file":"B2","page":5,"loc":"","type":"Sugerencia","priority":"Media","title":"Demostración de la desigualdad logarítmica demasiado sofisticada","snippet":"","issue":"En la solución de Mel98/Mad23 se justifica la no igualdad usando irracionalidad/exponenciales; para el objetivo basta con desigualdades estrictas por monotonía de 1/x en (n,n+1), y luego la desigualdad no estricta se deduce directamente.","suggestion":"Simplificar esa parte: “como c∈(n,n+1), 1/(n+1)<1/c<1/n; por tanto también ≤”."},{"id":"C0-01","theme":"C0","file":"C0","page":1,"loc":"","type":"Notación","priority":"Baja","title":"Derivada n-ésima con notación no uniforme","snippet":"","issue":"En C0 aparece f^(n), mientras que en otras fichas usas f^n) por criterio propio. No es error matemático, pero queda heterogéneo.","suggestion":"Unificar si quieres mantener tu convención en todas las fichas."},{"id":"C0-02","theme":"C0","file":"C0","page":5,"loc":"","type":"Maquetación","priority":"Baja","title":"Infografía de derivación muy densa","snippet":"","issue":"La infografía general de derivación está bien, pero a tamaño A4 se lee con dificultad en los recuadros inferiores.","suggestion":"Opcional: dejarla como resumen visual y no como contenido examinable, o insertar versión de más resolución."},{"id":"C1-01","theme":"C1","file":"C1","page":1,"loc":"","type":"Matemático","priority":"Alta","title":"Función max{x²,1/x} no está definida en x=0","snippet":"","issue":"En And88 se define f:ℝ→ℝ con f(x)=máx{x²,1/x}, pero 1/x no existe en x=0. Al ser ficha 1 no puedes cambiar el enunciado, pero sí conviene avisar.","suggestion":"En la solución, añadir al inicio: “tal como está escrito, debe interpretarse en ℝ\\{0}; si se exige f:ℝ→ℝ, el enunciado necesita completar f(0)”."},{"id":"C1-02","theme":"C1","file":"C1","page":3,"loc":"","type":"Maquetación","priority":"Baja","title":"Nav21: desarrollo algebraico largo","snippet":"","issue":"La comprobación trigonométrica de la derivada ocupa mucho y puede ocultar la idea principal.","suggestion":"Opcional: encerrar la equivalencia clave en un recuadro y mandar parte del desarrollo a una “comprobación”."},{"id":"C2-02","theme":"C2","file":"C2","page":1,"loc":"","type":"Redacción","priority":"Media","title":"Derivada generalizada: conviene separar de derivada ordinaria","snippet":"","issue":"El ejercicio 7 introduce una derivada generalizada potente, pero puede confundirse con derivada simétrica o con la derivada usual.","suggestion":"Añadir una frase: “no sustituye a la derivada ordinaria; puede existir aunque f′ no exista”."},{"id":"C2-01","theme":"C2","file":"C2","page":4,"loc":"","type":"Errata","priority":"Media","title":"Límite escrito como lim x→0 E","snippet":"","issue":"En la segunda forma del ejercicio 1 aparece “lim x→0 E”; debe ser el límite cuando h→0.","suggestion":"Cambiar por “Llamemos E al límite propuesto” o “lim_{h→0}”."},{"id":"D0-03","theme":"D0","file":"D0","page":4,"loc":"","type":"Maquetación","priority":"Media","title":"Infografía de series con fórmulas pequeñas","snippet":"","issue":"La página 4 tiene mucha información y algunos criterios pueden quedar ilegibles al imprimir.","suggestion":"Usar imagen de mayor resolución o dividir en dos infografías si se entrega como material de estudio."},{"id":"D0-01","theme":"D0","file":"D0","page":6,"loc":"","type":"Matemático","priority":"Media","title":"“C∞ suele ser suficiente” para Taylor","snippet":"","issue":"Se dice que suele ser suficiente que la función sea C∞, pero en rigor no lo es; luego se aclara que la condición es ser analítica.","suggestion":"Cambiar por “en los ejemplos habituales de oposición suele ocurrir, pero la condición real es analiticidad”."},{"id":"D0-02","theme":"D0","file":"D0","page":6,"loc":"","type":"Errata","priority":"Baja","title":"“la sucesión converja” en Taylor","snippet":"","issue":"En la explicación debería hablarse de que converja la serie de potencias, no la sucesión.","suggestion":"Cambiar “sucesión” por “serie”."},{"id":"D1-02","theme":"D1","file":"D1","page":3,"loc":"","type":"Errata","priority":"Media","title":"Sumatorio geométrico: índice mal renderizado","snippet":"","issue":"En el apartado 9, parte b, se lee algo como ∑x^k = 0 = 1/(1−x), que parece un problema de maquetación del índice inferior.","suggestion":"Revisar el sumatorio para que aparezca k=0 debajo y ∞ arriba."},{"id":"D1-01","theme":"D1","file":"D1","page":4,"loc":"","type":"Sugerencia","priority":"Baja","title":"Taylor de x e^x: radio de convergencia opcional","snippet":"","issue":"La solución del ejercicio 1 está bien; el cálculo del radio es correcto, pero quizá distrae porque el enunciado solo pide polinomio.","suggestion":"Dejarlo como “extra” claramente marcado, como ya haces en otros sitios."},{"id":"D2-02","theme":"D2","file":"D2","page":1,"loc":"","type":"Maquetación","priority":"Baja","title":"Determinante comprimido","snippet":"","issue":"El determinante del ejercicio 1 queda muy apretado en la celda.","suggestion":"Ampliar verticalmente la celda o reducir un poco el tamaño de fuente solo del determinante."},{"id":"D2-01","theme":"D2","file":"D2","page":3,"loc":"","type":"Sugerencia","priority":"Media","title":"Determinante y Taylor: hipótesis delicada bien detectada","snippet":"","issue":"La solución advierte correctamente que “derivable hasta orden tres” no justifica sin más un desarrollo con O(h⁴).","suggestion":"Mantener la advertencia; es una buena nota para alumnos avanzados."},{"id":"E0-01","theme":"E0","file":"E0","page":1,"loc":"","type":"Redacción","priority":"Media","title":"Ejercicio 6 de la armónica: “calcula” sin indicar divergencia","snippet":"","issue":"La suma armónica no converge; si el objetivo es detectar divergencia, el enunciado puede parecer que espera un número.","suggestion":"Añadir “calcula, si existe, o estudia la convergencia”."},{"id":"E0-02","theme":"E0","file":"E0","page":5,"loc":"","type":"Redacción","priority":"Baja","title":"Suma de Riemann: “usaremos suma superior”","snippet":"","issue":"En la demostración general de Riemann se dice que se usa suma superior, pero luego se evalúa un punto tipo extremo derecho; para funciones no monótonas eso no siempre es suma superior.","suggestion":"Cambiar por “suma de Riemann con extremos derechos” o añadir la hipótesis de función creciente en el dibujo."},{"id":"E0-03","theme":"E0","file":"E0","page":"9","loc":"Página 9, solución del ejercicio 4 - Ambito: Solución","type":"Errata","priority":"Baja","title":"Ejercicio 4: puntos suspensivos con √3/n³","snippet":"","issue":"En la solución del ejercicio 4 aparece en una línea intermedia “... + √3/n³” donde debería mantenerse el patrón hasta √n/n³. Es una errata de transcripción, no afecta al resultado.","suggestion":"Cambiar por “... + √n/n³” o directamente pasar a sumatorio."},{"id":"E1-02","theme":"E1","file":"E1","page":1,"loc":"","type":"Maquetación","priority":"Media","title":"Primer enunciado: expresión muy comprimida","snippet":"","issue":"El primer problema de E1 tiene una fórmula larga con raíces y potencias que puede leerse con dificultad.","suggestion":"Separar F(x) en una línea propia más grande, o ampliar la altura de la celda."},{"id":"E1-03","theme":"E1","file":"E1","page":2,"loc":"","type":"Sugerencia","priority":"Baja","title":"Problema Mur25: buena nota, quizá destacarla más","snippet":"","issue":"La nota de “parece de Riemann pero no lo es” es útil.","suggestion":"Ponerla en un recuadro de advertencia si quieres que no pase desapercibida."},{"id":"E1-01","theme":"E1","file":"E1","page":3,"loc":"","type":"Maquetación","priority":"Alta","title":"Sumatorio con límite superior ∞ en lugar de n","snippet":"","issue":"En la solución del ejercicio 1 aparece el sumatorio con k=1 hasta ∞ justo antes de reconocer la suma de Riemann. Debe ser hasta n.","suggestion":"Corregir los dos sumatorios de esa línea: el límite superior debe ser n."},{"id":"F0-01","theme":"F0","file":"F0","page":4,"loc":"","type":"Matemático","priority":"Alta","title":"Extensión de Gamma mal escrita: ℤ≤0","snippet":"","issue":"Se lee que Gamma “puede extenderse a ℤ≤0 (todos los reales salvo los enteros negativos y el cero)”. Eso es contradictorio: la extensión meromorfa existe en ℂ salvo los enteros no positivos.","suggestion":"Cambiar por “puede extenderse meromórficamente a ℂ \\ {0,−1,−2,…}; en reales, a ℝ \\ {0,−1,−2,…}”."},{"id":"F0-02","theme":"F0","file":"F0","page":4,"loc":"","type":"Matemático","priority":"Media","title":"Propiedad Γ(p+1)=pΓ(p) con p∈ℂ sin matiz","snippet":"","issue":"La fórmula es válida donde ambos lados están definidos; p no puede ser un polo problemático si se interpreta como función usual.","suggestion":"Añadir “para los valores donde Gamma está definida”, o “por continuación meromorfa salvo polos”."},{"id":"F0-03","theme":"F0","file":"F0","page":5,"loc":"","type":"Matemático","priority":"Alta","title":"Integral con k∈ℤ no converge para todo entero","snippet":"","issue":"En el ejercicio 1c se escribe k∈ℤ y se concluye Γ(k+1)=k!. Pero ∫0∞ x^k e^{-x} dx converge solo si k>-1; para enteros, k≥0.","suggestion":"Cambiar el enunciado a k∈ℤ, k≥0, o en la solución añadir “si k≥0; si k≤−1 diverge en 0”."},{"id":"F0-04","theme":"F0","file":"F0","page":5,"loc":"","type":"Matemático","priority":"Media","title":"“Incluso si k∉ℤ” necesita condición de convergencia","snippet":"","issue":"Se dice que si k no es entero se expresa como Gamma, pero falta la condición k>-1 en reales.","suggestion":"Añadir “para k>-1; en general Γ(k+1) requiere k+1>0 en la integral real”."},{"id":"F1-03","theme":"F1","file":"F1","page":1,"loc":"","type":"Sugerencia","priority":"Media","title":"Producto integral como producto escalar","snippet":"","issue":"En Bal18 se define ⟨f,g⟩; conviene remarcar que la positividad definida usa continuidad.","suggestion":"Añadir que si f es continua y ∫f²=0, entonces f=0; para funciones no continuas habría matices."},{"id":"F1-02","theme":"F1","file":"F1","page":3,"loc":"","type":"Maquetación","priority":"Baja","title":"Ejercicios 15 y 16 muy relacionados con A1/A2","snippet":"","issue":"Los problemas Val15 y And25 son de representación + área; encajan en F1 pero también duplican el bloque A.","suggestion":"Mantener si la intención es reforzar integrales; añadir nota “la representación se trabajó en A”."},{"id":"F1-01","theme":"F1","file":"F1","page":5,"loc":"","type":"Errata","priority":"Media","title":"Longitud de arco con unidades cuadradas","snippet":"","issue":"En Bal19, el resultado de longitud aparece con “u²”. La longitud debe ir en unidades lineales.","suggestion":"Cambiar “u²” por “u” o no poner unidad."},{"id":"F2-01","theme":"F2","file":"F2","page":1,"loc":"","type":"Notación","priority":"Baja","title":"n∈Z en el enunciado histórico","snippet":"","issue":"En la nota de Sevilla69 aparece n∈Z; en español matemático conviene ℤ, aunque no es grave.","suggestion":"Cambiar Z por ℤ si editas esa nota."},{"id":"F2-02","theme":"F2","file":"F2","page":3,"loc":"","type":"Sugerencia","priority":"Baja","title":"Área de e^{-x}sen x: aproximación inicial útil","snippet":"","issue":"La aproximación con dos lóbulos está bien, pero puede parecer parte de la solución exacta.","suggestion":"Marcarla explícitamente como “estimación previa” antes de la solución exacta."},{"id":"G0-02","theme":"G0","file":"G0","page":1,"loc":"","type":"Maquetación","priority":"Baja","title":"Tres miniaturas de vídeos repetidas","snippet":"","issue":"En G0 aparecen tres miniaturas muy similares; puede parecer un error o duplicado.","suggestion":"Si no son tres enlaces distintos, dejar solo una; si son distintos, titular cada miniatura."},{"id":"G0-03","theme":"G0","file":"G0","page":"1","loc":"Parte baja de la página 1 - Ambito: Maquetación","type":"Maquetación","priority":"Baja","title":"Miniaturas repetidas de vídeos","snippet":"","issue":"En G0 aparecen tres miniaturas muy similares/repetidas en la parte inferior de la página 1. No es un error matemático, pero visualmente roba mucho espacio a una ficha-resumen de solo tres páginas.","suggestion":"Valorar dejar una sola miniatura o reducirlas, especialmente si se imprime en papel."},{"id":"G0-01","theme":"G0","file":"G0","page":2,"loc":"","type":"Errata","priority":"Baja","title":"Distancia punto-recta: d(P,π)","snippet":"","issue":"En la estrategia del plano perpendicular se escribe d(P,π)=d(P,Q), pero Q es el punto de la recta; debería hablarse de d(P,r) o d(P,Q).","suggestion":"Cambiar por “d(P,r)=d(P,Q)”."},{"id":"G1-02","theme":"G1","file":"G1","page":1,"loc":"","type":"Maquetación","priority":"Baja","title":"Portada G1 muy compacta","snippet":"","issue":"La primera página de G1 concentra muchos enunciados largos.","suggestion":"No es error; si se imprime, quizá aumentar interlineado o partir antes del ejercicio 9."},{"id":"G1-01","theme":"G1","file":"G1","page":7,"loc":"","type":"Redacción","priority":"Media","title":"And14 apartado b ambiguo","snippet":"","issue":"La propia solución indica que el apartado b tiene una interpretación confusa.","suggestion":"Mantener la advertencia; si es posible, añadir las dos interpretaciones en el índice de soluciones."},{"id":"H0-01","theme":"H0","file":"H0","page":1,"loc":"","type":"Redacción","priority":"Alta","title":"Lugar geométrico “equidistan de un punto dado”","snippet":"","issue":"Los ejercicios 3 y 7 dicen “puntos que equidistan de un punto dado”. Con un único punto no tiene sentido hablar de equidistar; falta “a una distancia fija”.","suggestion":"Cambiar a “puntos cuya distancia a un punto dado es constante”. En el espacio: esfera."},{"id":"H0-03","theme":"H0","file":"H0","page":4,"loc":"","type":"Notación","priority":"Media","title":"Elipse en polares: indicar centro en el origen","snippet":"","issue":"La fórmula polar usada para la elipse corresponde a origen en el centro y ejes alineados. Puede confundirse con la forma foco-directriz, más habitual en cónicas polares.","suggestion":"Añadir “tomando el polo en el centro de la elipse”."},{"id":"H0-04","theme":"H0","file":"H0","page":"4","loc":"Mitad de la página, apartado Elipse - Ambito: Teoría","type":"Precisión matemática","priority":"Media","title":"Elipse: excentricidad “1” como caso estirado","snippet":"","issue":"En la página 4 se dice que la excentricidad vale 0 en la circunferencia y 1 en la elipse más estirada. En una elipse no degenerada la excentricidad cumple 0≤ε<1; ε=1 es un límite degenerado/parabólico, no una elipse ordinaria.","suggestion":"Cambiar por: “ε=0 en la circunferencia y ε→1 cuando la elipse se hace cada vez más alargada”."},{"id":"H0-05","theme":"H0","file":"H0","page":"5","loc":"Mitad de la página, apartado Hipérbola - Ambito: Teoría","type":"Precisión matemática","priority":"Media","title":"Hipérbola: descripción del límite de excentricidad","snippet":"","issue":"Sigue apareciendo la frase “siendo 1 el caso límite de una línea recta horizontal, y en el infinito dos rectas verticales”. Para hipérbolas ε∈(1,∞); la interpretación geométrica de esos límites no conviene presentarla así en una ficha de repaso.","suggestion":"Reformular de forma prudente: “en una hipérbola no degenerada ε>1; al acercarse a 1 se obtiene un caso degenerado y al crecer ε aumenta la apertura”."},{"id":"H0-02","theme":"H0","file":"H0","page":6,"loc":"","type":"Matemático","priority":"Alta","title":"Parábola: directriz escrita como recta horizontal x=a","snippet":"","issue":"Con foco F(0,f), la directriz debe ser una recta horizontal y=-f, no x=a. Además si se usa p=2f, la forma canónica vertical debe quedar x²=2py o x²=4fy según convención.","suggestion":"Corregir la directriz y revisar que la ecuación canónica posterior sea coherente con p=2f."},{"id":"H0-06","theme":"H0","file":"H0","page":"6","loc":"Mitad de la página, apartado Parábola - Ambito: Teoría","type":"Error matemático","priority":"Alta","title":"Parábola: frase copiada sobre excentricidad","snippet":"","issue":"En la página 6 se afirma que todas las parábolas tienen ε=1, pero a continuación aparece una frase sobre “línea recta horizontal” y “dos rectas verticales” que pertenece al comentario anterior de la hipérbola y no describe la parábola.","suggestion":"Eliminar esa segunda parte. Bastaría con: “La parábola es la única cónica no degenerada con excentricidad ε=1; todas las parábolas son semejantes entre sí”."},{"id":"H0-07","theme":"H0","file":"H0","page":"6","loc":"Parte baja de la página, apartado Parábola - Ambito: Teoría","type":"Error matemático","priority":"Alta","title":"Parábola: ecuación polar no coherente con la orientación","snippet":"","issue":"La página 6 dice que la polar de una parábola que abre hacia la derecha es ρ=2p cosθ/sen²θ, pero la deducción escrita parte de y=x²/(2p), que es una parábola vertical y lleva a ρ=2p senθ/cos²θ. La fórmula escrita corresponde a la parábola horizontal x=y²/(2p).","suggestion":"Elegir una orientación y mantenerla. Para y=x²/(2p): ρ=2p senθ/cos²θ. Para x=y²/(2p): ρ=2p cosθ/sen²θ."},{"id":"H1-02","theme":"H1","file":"H1","page":1,"loc":"","type":"Redacción","priority":"Baja","title":"Nota del enunciado CM00 correcta","snippet":"","issue":"La nota “forman CON el origen” está bien y evita confusión.","suggestion":"Mantenerla."},{"id":"H1-01","theme":"H1","file":"H1","page":4,"loc":"","type":"Matemático","priority":"Media","title":"CM00: área del triángulo OAB con posible factor 2","snippet":"","issue":"Si el triángulo lo forman O, A y B, la base vertical AB mide 2R sen α; el área sería R² senα cosα = R²/2 sen2α. En la solución aparece la mitad. El máximo y P salen igual, pero el área máxima no.","suggestion":"Corregir el factor si se menciona el área; el punto P=(√2 R,0) se mantiene."},{"id":"H2-01","theme":"H2","file":"H2","page":1,"loc":"","type":"Redacción","priority":"Media","title":"Problema 1: condición sobre p","snippet":"","issue":"En el mecanismo AB=BC=d y P a distancia p de C, para P situado sobre el segmento BC debe cumplirse 0≤p≤d. La fórmula de la elipse usa semieje 2d−p.","suggestion":"Añadir la restricción p∈[0,d] en la solución; si p se permite fuera, sería prolongación, no segmento."},{"id":"H2-02","theme":"H2","file":"H2","page":2,"loc":"","type":"Redacción","priority":"Baja","title":"Problema 6: nota sobre posible enunciado original","snippet":"","issue":"La nota de que quizá B=(b,0) está bien; evita que el alumno confíe en un problema posiblemente mal copiado.","suggestion":"Mantenerla, quizá destacando “si el tribunal lo dio así, seguimos el enunciado literal”."},{"id":"I0-04","theme":"I0","file":"I0","page":1,"loc":"","type":"Sugerencia","priority":"Baja","title":"Folium desplazado: aclarar sustitución","snippet":"","issue":"La instrucción x→x−2, y→y−2 es correcta para desplazar a la derecha y arriba, pero puede confundir.","suggestion":"Añadir “la nueva ecuación será (x−2)³+(y−2)³=3(x−2)(y−2)”."},{"id":"I0-01","theme":"I0","file":"I0","page":3,"loc":"","type":"Matemático","priority":"Alta","title":"Nefroide: ecuación implícita no coincide con parametrización","snippet":"","issue":"La parametrización x=a(3cos t−cos3t), y=a(3sen t−sen3t) no satisface la implícita con RHS 108a⁴x². Por ejemplo, en t=π/2 da (0,4a), que no cumple esa ecuación.","suggestion":"Cambiar la implícita a (x²+y²−4a²)³ = 108a⁴ y², o intercambiar x/y en la parametrización si quieres la otra orientación."},{"id":"I0-03","theme":"I0","file":"I0","page":7,"loc":"","type":"Redacción","priority":"Baja","title":"Longitud: primera fórmula con dx²+dy²","snippet":"","issue":"La expresión ∫√(dx²+dy²) es intuitiva, pero no estándar para alumnos.","suggestion":"Mantener si se explica, pero remarcar que las fórmulas operativas son las siguientes."},{"id":"I0-02","theme":"I0","file":"I0","page":8,"loc":"","type":"Matemático","priority":"Media","title":"Área en paramétricas con valor absoluto dentro","snippet":"","issue":"La fórmula A=∫|y(t)x′(t)|dt no es la fórmula general de área encerrada por una curva cerrada; puede sobrecontar si la curva se recorre con cambios de orientación o cruces.","suggestion":"Escribir “para arcos funcionales sin cambio de signo” y añadir la fórmula general A=|∫ y(t)x′(t)dt| o A=1/2|∫(x y′−y x′)dt|."},{"id":"I0-05","theme":"I0","file":"I0","page":"8","loc":"Mitad de la página, apartado Área - Ambito: Teoría","type":"Precisión matemática","priority":"Alta","title":"Área en paramétricas: fórmula válida solo en ciertos casos","snippet":"","issue":"Se presenta A=∫|y(t)x′(t)|dt como fórmula general de área paramétrica. Esto funciona para área bajo una curva parametrizada respecto al eje OX y con cuidado de orientación/monotonía, pero no es la fórmula general para una curva cerrada.","suggestion":"Añadir una advertencia y, para curvas cerradas, incluir A=1/2 |∫(x y′−y x′)dt|, o equivalentemente A=|∫ x y′dt| si se controla la orientación."},{"id":"I0-06","theme":"I0","file":"I0","page":"49","loc":"Parte alta de la página 49 - Ambito: Solución de curva paramétrica","type":"Errata","priority":"Alta","title":"Cicloide: cortes con eje mal etiquetados","snippet":"","issue":"En el análisis de la cicloide se escribe “Eje OY: x=0” pero se resuelve 1−cos t=0, que corresponde a y=0. Los puntos P(2nπ,0) son cortes con el eje OX, no con el eje OY salvo el origen.","suggestion":"Cambiar el rótulo a “Eje OX: y=0”. El corte con OY exige x=t−sen t=0, que en el primer arco solo da t=0."},{"id":"I0-07","theme":"I0","file":"I0","page":"49","loc":"Zona media de la página 49 - Ambito: Solución de cicloide","type":"Error matemático","priority":"Alta","title":"Cicloide: límite para puntos singulares tomado en el punto equivocado","snippet":"","issue":"En la misma página, después de clasificar t=2nπ como singular y t=(2n+1)π como tangencia horizontal, el límite para estudiar la naturaleza se toma cuando t→(2n+1)π. Ese no es el punto singular de la cicloide; el singular/cúspide está en t=2nπ.","suggestion":"Cambiar el estudio local de la cúspide a t→2nπ. En t=(2n+1)π la pendiente tiende a 0, no a infinito; es la parte alta del arco."},{"id":"I1-03","theme":"I1","file":"I1","page":1,"loc":"","type":"Maquetación","priority":"Baja","title":"Falta salto entre ejercicios 6 y 9 en portada","snippet":"","issue":"En la portada de I1 se pasa del ejercicio 6 al 9 en la misma vista por paginación; no es error, pero puede parecer que faltan 7 y 8 si no se ve la página siguiente.","suggestion":"Revisar que los ejercicios 7 y 8 estén en páginas intermedias o indicar continuidad."},{"id":"I1-01","theme":"I1","file":"I1","page":3,"loc":"","type":"Matemático","priority":"Media","title":"Astroide: “todas las simetrías de la circunferencia”","snippet":"","issue":"El astroide tiene simetrías respecto a ejes, origen y bisectrices, pero no todas las simetrías de la circunferencia; no tiene simetría rotacional arbitraria.","suggestion":"Cambiar por “tiene las simetrías del cuadrado: ejes, origen y bisectrices”."},{"id":"I1-01B","theme":"I1","file":"I1","page":"3","loc":"Parte alta de la solución del ejercicio 1 - Ambito: Teoría/representación","type":"Precisión matemática","priority":"Baja","title":"Astroide: “todas las simetrías de la circunferencia”","snippet":"","issue":"La astroide tiene simetrías respecto a los ejes, al origen y a las bisectrices, pero no todas las simetrías de la circunferencia en el sentido de invariancia ante cualquier rotación.","suggestion":"Cambiar por “tiene las simetrías del cuadrado: ejes, origen y bisectrices”."},{"id":"I1-02","theme":"I1","file":"I1","page":5,"loc":"","type":"Sugerencia","priority":"Baja","title":"Área del astroide por beta incompleta","snippet":"","issue":"La integral del área del astroide puede resolverse por identidades trigonométricas; Beta es correcto pero quizá más avanzado de lo necesario.","suggestion":"Mantener como método elegante, pero añadir una alternativa elemental si buscas accesibilidad."},{"id":"I2-03","theme":"I2","file":"I2","page":1,"loc":"","type":"Redacción","priority":"Media","title":"Cisoide de Diocles: puntos A/B/T muy cargados","snippet":"","issue":"El enunciado de Rio23 es largo y usa muchos elementos geométricos.","suggestion":"En la solución, empezar con un esquema grande antes de las ecuaciones; no tocar el enunciado de oposición."},{"id":"I2-02","theme":"I2","file":"I2","page":3,"loc":"","type":"Maquetación","priority":"Baja","title":"Gráfica del folium en I2","snippet":"","issue":"La gráfica del folium se ve correcta y con asíntota, pero es pequeña.","suggestion":"Si esta ficha es definitiva, mantener; si se imprime para explicar, ampliar el dibujo un 15-20 %."},{"id":"I2-01","theme":"I2","file":"I2","page":4,"loc":"","type":"Redacción","priority":"Media","title":"Folium: explicación de simetría en polares confusa","snippet":"","issue":"En el cálculo del área del folium se dice que con 0 a π/2 se suma y resta área por simetría. En realidad el bucle está en el primer cuadrante y esos límites ya recorren el bucle completo con radio positivo.","suggestion":"Eliminar o reescribir esa frase; la alternativa 0 a π/4 y multiplicar por 2 sí es correcta por simetría respecto y=x."},{"id":"J1-01","theme":"J1","file":"J1","page":"3","loc":"Página 3, primer estudio de la función sin valor absoluto - Ambito: Solución","type":"Error matemático","priority":"Alta","title":"Repaso J: asíntota vertical de x/ln x mal localizada","snippet":"","issue":"En la solución de J1.1 se dice que x/ln x tiene AV en x=0+ y que tiende a −∞. En realidad, cuando x→0+, x/ln x→0−. La asíntota vertical está en x=1, donde ln x→0.","suggestion":"Corregir el estudio inicial: dominio (0,∞)−{1}; límite en 0+ igual a 0−; AV en x=1; mínimo en (e,e) en la rama positiva."},{"id":"J1-02","theme":"J1","file":"J1","page":"4","loc":"Página 4, gráfica de la función con valor absoluto - Ambito: Solución","type":"Error matemático","priority":"Alta","title":"Repaso J: la gráfica con valor absoluto hereda la asíntota incorrecta","snippet":"","issue":"La representación de |x/ln x| se basa en la gráfica anterior y por tanto puede inducir a pensar que hay asíntota vertical en x=0. La función con valor absoluto también tiene AV en x=1, y se aproxima a 0 cuando x→0+.","suggestion":"Actualizar la explicación y, si se mantiene la gráfica, asegurar que el comportamiento cerca de 0 se vea como acercamiento a 0, no como rama infinita."},{"id":"J1-03","theme":"J1","file":"J1","page":"10","loc":"Página 10, solución del ejercicio 5 - Ambito: Solución","type":"Errata matemática","priority":"Media","title":"Repaso J: raíz extraída en f(x) cerca de 0","snippet":"","issue":"En el ejercicio 5, al extraer x³ de √(x³+x⁹) debería aparecer x^(3/2)√(1+x⁶) si se trabaja con x≥0. En el texto aparece x^(1/3), aunque después se usa x^(7/2), que sí corresponde a x²·x^(3/2).","suggestion":"Corregir la línea intermedia para evitar confusión: √(x³+x⁹)=x^(3/2)√(1+x⁶)."}];
+const STORAGE_KEY = 'vimat_review_fichas_state_v1';
+let state = loadState();
+let filters = { theme: 'Todos', type: 'Todos', query: '', showReviewed: false };
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { reviewed: {}, notes: {}, globalNotes: '' };
+  } catch(e) {
+    return { reviewed: {}, notes: {}, globalNotes: '' };
+  }
+}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function priorityClass(p) { return p === 'Crítica' ? 'crit' : p === 'Alta' ? 'high' : p === 'Media' ? 'medium' : 'low'; }
+function normalize(s) { return (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+function themes() { return ['Todos', ...Array.from(new Set(SUGGESTIONS.map(s => s.theme)))]; }
+function types() { return ['Todos', ...Array.from(new Set(SUGGESTIONS.map(s => s.type))).sort()]; }
+function byPriority(a,b) {
+  const order = { 'Crítica': 0, 'Alta': 1, 'Media': 2, 'Baja': 3 };
+  return (order[a.priority] ?? 9) - (order[b.priority] ?? 9) || a.theme.localeCompare(b.theme) || a.id.localeCompare(b.id);
+}
+function filtered() {
+  const q = normalize(filters.query);
+  return SUGGESTIONS.filter(s => {
+    if (filters.theme !== 'Todos' && s.theme !== filters.theme) return false;
+    if (filters.type !== 'Todos' && s.type !== filters.type) return false;
+    if (!filters.showReviewed && state.reviewed[s.id]) return false;
+    if (q) {
+      const hay = normalize([s.id,s.theme,s.page,s.loc,s.type,s.priority,s.title,s.issue,s.suggestion,s.snippet].join(' '));
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  }).sort(byPriority);
+}
+function renderControls() {
+  const themeSelect = document.getElementById('themeSelect');
+  themeSelect.innerHTML = themes().map(t => `<option value="${escapeAttr(t)}">${escapeHtml(t)}</option>`).join('');
+  themeSelect.value = filters.theme;
+  const typeSelect = document.getElementById('typeSelect');
+  typeSelect.innerHTML = types().map(t => `<option value="${escapeAttr(t)}">${escapeHtml(t)}</option>`).join('');
+  typeSelect.value = filters.type;
+  document.getElementById('showReviewed').checked = filters.showReviewed;
+  document.getElementById('globalNotes').value = state.globalNotes || '';
+}
+function renderStats(list) {
+  const total = SUGGESTIONS.length;
+  const reviewed = Object.keys(state.reviewed).filter(id => state.reviewed[id]).length;
+  const pending = total - reviewed;
+  const criticalPending = SUGGESTIONS.filter(s => (s.priority === 'Crítica' || s.priority === 'Alta') && !state.reviewed[s.id]).length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><strong>${total}</strong><span>Sugerencias totales</span></div>
+    <div class="stat"><strong>${pending}</strong><span>Pendientes</span></div>
+    <div class="stat"><strong>${reviewed}</strong><span>Revisadas</span></div>
+    <div class="stat"><strong>${criticalPending}</strong><span>Críticas/altas pendientes</span></div>`;
+}
+function renderThemeList() {
+  const counts = {};
+  for (const s of SUGGESTIONS) { counts[s.theme] = (counts[s.theme] || 0) + 1; }
+  const pendingCounts = {};
+  for (const s of SUGGESTIONS) if (!state.reviewed[s.id]) pendingCounts[s.theme] = (pendingCounts[s.theme] || 0) + 1;
+  const items = themes().filter(t => t !== 'Todos').map(t => `
+    <button class="themeButton ${filters.theme===t?'active':''}" data-theme="${escapeAttr(t)}">
+      ${escapeHtml(t)} <small>${pendingCounts[t] || 0}/${counts[t]}</small>
+    </button>`).join('');
+  document.getElementById('themeList').innerHTML = `<button class="themeButton ${filters.theme==='Todos'?'active':''}" data-theme="Todos">Todos <small>${SUGGESTIONS.filter(s=>!state.reviewed[s.id]).length}/${SUGGESTIONS.length}</small></button>${items}`;
+}
+function renderCards() {
+  const list = filtered();
+  const root = document.getElementById('cards');
+  if (!list.length) { root.innerHTML = `<div class="empty">No hay sugerencias con los filtros actuales.</div>`; return; }
+  root.innerHTML = list.map(s => {
+    const reviewed = !!state.reviewed[s.id];
+    const note = state.notes[s.id] || '';
+    return `<details class="card ${reviewed ? 'reviewed' : ''}" data-id="${s.id}" data-priority="${escapeAttr(s.priority)}">
+      <summary>
+        <div>
+          <div class="title">${escapeHtml(s.title)}</div>
+          <div class="meta">
+            <span class="badge ${priorityClass(s.priority)}">${escapeHtml(s.priority)}</span>
+            <span class="badge">${escapeHtml(s.type)}</span>
+            <span class="badge">${escapeHtml(s.theme)}</span>
+            ${reviewed ? '<span class="badge" style="background:#dcfce7;color:#166534">Revisada</span>' : ''}
+          </div>
+        </div>
+        <div class="where">${escapeHtml(s.file)}<br>Pág. ${escapeHtml(s.page)} · ${escapeHtml(s.loc)}</div>
+      </summary>
+      <div class="content">
+        ${s.snippet ? `<div class="box"><h3>Texto localizado</h3><p>${escapeHtml(s.snippet)}</p></div>` : ''}
+        <div class="box"><h3>Problema detectado</h3><p>${escapeHtml(s.issue)}</p></div>
+        <div class="box"><h3>Propuesta de cambio</h3><p>${escapeHtml(s.suggestion)}</p></div>
+        <div class="box">
+          <h3>Tus notas / desacuerdo</h3>
+          <textarea class="notes itemNote" data-id="${s.id}" placeholder="Escribe aquí si no estás de acuerdo, si lo has cambiado de otra forma, etc.">${escapeHtml(note)}</textarea>
+        </div>
+        <div class="actions">
+          <button class="${reviewed ? 'undo' : 'done'} markBtn" data-id="${s.id}">${reviewed ? 'Marcar como pendiente' : 'Marcar como revisada'}</button>
+          <button class="ghost copyBtn" data-id="${s.id}">Copiar sugerencia</button>
+        </div>
+      </div>
+    </details>`;
+  }).join('');
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([root]);
+}
+function renderAll() { renderStats(); renderThemeList(); renderCards(); }
+function escapeHtml(s) { return (s ?? '').toString().replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function escapeAttr(s) { return escapeHtml(s); }
+function exportState() {
+  const payload = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    source: 'revision_fichas_vimat',
+    reviewed: state.reviewed,
+    notes: state.notes,
+    globalNotes: state.globalNotes || '',
+    suggestionsIncluded: SUGGESTIONS.map(s => ({ id: s.id, theme: s.theme, title: s.title, page: s.page, loc: s.loc }))
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `revision_vimat_estado_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importState(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const incoming = JSON.parse(reader.result);
+      if (Array.isArray(incoming.suggestions)) {
+        SUGGESTIONS.splice(0, SUGGESTIONS.length, ...incoming.suggestions);
+      }
+      state.reviewed = incoming.reviewed || {};
+      state.notes = incoming.notes || {};
+      state.globalNotes = incoming.globalNotes || '';
+      saveState();
+      renderControls();
+      renderAll();
+      alert('Progreso importado correctamente.');
+    } catch(e) { alert('No he podido importar el JSON.'); }
+  };
+  reader.readAsText(file);
+}
+
+// Events
+document.addEventListener('DOMContentLoaded', () => {
+  renderControls(); renderAll();
+  document.getElementById('themeSelect').addEventListener('change', e => { filters.theme=e.target.value; renderAll(); });
+  document.getElementById('typeSelect').addEventListener('change', e => { filters.type=e.target.value; renderAll(); });
+  document.getElementById('searchBox').addEventListener('input', e => { filters.query=e.target.value; renderCards(); });
+  document.getElementById('showReviewed').addEventListener('change', e => { filters.showReviewed=e.target.checked; renderAll(); });
+  document.getElementById('globalNotes').addEventListener('input', e => { state.globalNotes=e.target.value; saveState(); });
+  document.getElementById('toggleToolbarBtn').addEventListener('click', () => {
+    const toolbar = document.getElementById('toolbarPanel');
+    const hidden = toolbar.classList.toggle('toolbar-collapsed');
+    document.getElementById('toggleToolbarBtn').textContent = hidden ? 'Expandir filtros' : 'Contraer filtros';
+  });
+  document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
+    const layout = document.getElementById('reviewLayout');
+    const hidden = layout.classList.toggle('sidebar-collapsed');
+    document.getElementById('toggleSidebarBtn').textContent = hidden ? 'Expandir menu izquierdo' : 'Contraer menu izquierdo';
+  });
+  document.getElementById('toggleThemes').addEventListener('click', () => {
+    const list = document.getElementById('themeList');
+    const hidden = list.classList.toggle('hidden');
+    document.getElementById('toggleThemes').textContent = hidden ? 'Expandir fichas' : 'Contraer fichas';
+  });
+  document.getElementById('expandAllBtn').addEventListener('click', () => document.querySelectorAll('details.card').forEach(d => d.open = true));
+  document.getElementById('collapseAllBtn').addEventListener('click', () => document.querySelectorAll('details.card').forEach(d => d.open = false));
+  document.getElementById('exportBtn').addEventListener('click', exportState);
+  document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', e => { if (e.target.files[0]) importState(e.target.files[0]); });
+  document.getElementById('themeList').addEventListener('click', e => {
+    const btn = e.target.closest('.themeButton'); if (!btn) return;
+    filters.theme = btn.dataset.theme;
+    document.getElementById('themeSelect').value = filters.theme;
+    renderAll();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+  document.getElementById('cards').addEventListener('toggle', e => {
+    if (e.target.matches('details.card') && e.target.open) {
+      document.querySelectorAll('details.card[open]').forEach(d => { if (d !== e.target) d.open = false; });
+    }
+  }, true);
+  document.getElementById('cards').addEventListener('input', e => {
+    if (e.target.matches('.itemNote')) { state.notes[e.target.dataset.id] = e.target.value; saveState(); }
+  });
+  document.getElementById('cards').addEventListener('click', async e => {
+    const mark = e.target.closest('.markBtn');
+    if (mark) {
+      const id = mark.dataset.id;
+      state.reviewed[id] = !state.reviewed[id];
+      saveState();
+      const card = document.querySelector(`details.card[data-id="${id}"]`);
+      if (card) card.open = false;
+      setTimeout(renderAll, 180);
+      return;
+    }
+    const copy = e.target.closest('.copyBtn');
+    if (copy) {
+      const s = SUGGESTIONS.find(x => x.id === copy.dataset.id);
+      const text = `[${s.id}] ${s.theme} · pág. ${s.page} · ${s.loc}
+${s.title}
+Problema: ${s.issue}
+Propuesta: ${s.suggestion}`;
+      try { await navigator.clipboard.writeText(text); copy.textContent = 'Copiada'; setTimeout(()=>copy.textContent='Copiar sugerencia', 1200); } catch(e) { alert(text); }
+    }
+  });
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
