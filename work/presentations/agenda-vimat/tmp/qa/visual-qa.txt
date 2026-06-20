@@ -1,0 +1,5 @@
+Final PPTX: C:\Users\victo\Documents\Revisión Vimat\outputs\AgendaVimat_2026-2027_completa.pptx
+Slide count: 160
+QA: generated editable native text/shapes; rendered every slide as PNG plus a contact-sheet workspace artifact.
+Checked: cover updated to 2026-27, page numbers, recurring footer, week range Sep 2026-Aug 2027, no external raster dependency.
+Caveat: 2027 official/local holidays intentionally left editable because they depend on later official publication and geography.
