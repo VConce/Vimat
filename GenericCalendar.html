@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calendario</title>
+  <style>
+    :root {
+      --line: #9aa7ba;
+      --line-strong: #4b5567;
+      --weekend: #d8dde6;
+      --outside: #eef1f6;
+      --holiday: #e8ddff;
+      --exercise: #dff3df;
+      --exam: #ffdada;
+      --xxx: #fff2a8;
+      --ink: #18202f;
+      --muted: #657083;
+      --panel: #ffffff;
+      --brand: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: #f4f6fa;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(244, 246, 250, .96);
+      border-bottom: 1px solid #d7deea;
+      backdrop-filter: blur(8px);
+    }
+    .bar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      padding: 10px 14px;
+    }
+    .brand {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .logo {
+      width: 30px;
+      height: 30px;
+      margin-top: 2px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: #111827;
+    }
+    .subject {
+      font-size: 24px;
+      line-height: 1.04;
+      font-weight: 800;
+      outline: none;
+      border-radius: 4px;
+      padding: 1px 3px;
+      max-width: 440px;
+    }
+    .subject:focus {
+      background: #fff;
+      box-shadow: 0 0 0 2px var(--brand);
+    }
+    .subline { color: var(--muted); font-size: 14px; margin-top: 4px; }
+    .left-tools { display: flex; gap: 8px; align-items: center; margin-top: 7px; }
+    .disk {
+      width: 32px;
+      height: 28px;
+      border: 1px solid #b9c3d4;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 17px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      align-items: center;
+    }
+    button, select {
+      border: 1px solid #b9c3d4;
+      background: #fff;
+      color: var(--ink);
+      border-radius: 7px;
+      padding: 7px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button.primary { background: var(--brand); border-color: var(--brand); color: white; }
+    button.danger { background: #fff1f2; border-color: #fda4af; color: #be123c; }
+    .tool-segment { display: inline-flex; border: 1px solid #b9c3d4; border-radius: 8px; overflow: hidden; background: #fff; }
+    .tool-segment button { border: 0; border-radius: 0; border-right: 1px solid #d7deea; }
+    .tool-segment button:last-child { border-right: 0; }
+    .tool-segment button.active { background: #dbeafe; color: #1d4ed8; }
+    .dot { display: inline-block; width: 12px; height: 12px; border: 1px solid #94a3b8; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+    .dot.blank { background: #fff; }
+    .dot.exercise { background: var(--exercise); }
+    .dot.exam { background: var(--exam); }
+    .dot.holiday { background: var(--holiday); }
+    .dot.xxx { background: var(--xxx); }
+    main { padding: 14px; }
+    .months {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    .month {
+      background: var(--panel);
+      border: 1px solid #d7deea;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .month-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background: #f8fafc;
+      border-bottom: 1px solid #d7deea;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .month.collapsed .weekdays,
+    .month.collapsed .grid { display: none; }
+    .weekdays, .week-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(110px, 1fr)) repeat(2, minmax(34px, .28fr));
+    }
+    .weekdays div {
+      padding: 5px;
+      text-align: center;
+      font-weight: 800;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      background: #eef2f8;
+    }
+    .day { display: contents; }
+    .day-cell {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      min-width: 0;
+    }
+    .day.outside .day-cell { background: var(--outside); color: #8b95a5; }
+    .day.weekend .day-cell { background: var(--weekend) !important; }
+    .day.holiday .day-cell { background: var(--holiday); }
+    .day.exercise .day-cell { background: var(--exercise); }
+    .day.exam .day-cell { background: var(--exam); }
+    .day.xxx .day-cell { background: var(--xxx); }
+    .day-top {
+      min-height: 28px;
+      padding: 5px 6px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      border-top: 2px solid var(--line-strong);
+      cursor: grab;
+    }
+    .num { font-weight: 800; min-width: 20px; }
+    .badge { font-size: 11px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    textarea {
+      width: 100%;
+      resize: none;
+      border: 0;
+      outline: none;
+      padding: 5px 6px;
+      font: 12px/1.25 "Segoe UI", Arial, sans-serif;
+      overflow: hidden;
+    }
+    textarea.content { min-height: 54px; }
+    textarea.problems { min-height: 18px; font-size: 11px; color: #475569; }
+    .status { color: var(--muted); font-size: 13px; padding: 8px 0; }
+    .context-menu {
+      position: fixed;
+      z-index: 50;
+      min-width: 180px;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .18);
+      padding: 5px;
+      display: none;
+    }
+    .context-menu.open { display: grid; gap: 3px; }
+    .context-menu button { text-align: left; border: 0; border-radius: 5px; }
+    .drop-over .day-cell { box-shadow: inset 0 0 0 3px #f97316; }
+    @media (max-width: 980px) {
+      .bar { grid-template-columns: 1fr; }
+      .actions { justify-content: flex-start; }
+      .months { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div>
+        <div class="brand">
+          <div class="logo">V</div>
+          <div>
+            <div id="subject" class="subject" contenteditable="true" spellcheck="true">Calendario</div>
+            <div id="todayLine" class="subline"></div>
+            <div id="fileStatus" class="subline">Sin archivo vinculado</div>
+            <div class="left-tools">
+              <button id="diskBtn" class="disk" title="Guardar y elegir archivo">💾</button>
+              <span id="saveStatus" class="subline">sin guardar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <select id="yearSelect" aria-label="Curso"></select>
+        <button id="todayBtn">Mes actual</button>
+        <button id="expandAllBtn">Desplegar todo</button>
+        <button id="clearAllBtn" class="danger">Limpiar todo</button>
+        <div class="tool-segment" aria-label="Color">
+          <button data-color="blank" class="active"><span class="dot blank"></span>Normal</button>
+          <button data-color="exercise"><span class="dot exercise"></span>Ejercicios</button>
+          <button data-color="exam"><span class="dot exam"></span>Examen</button>
+          <button data-color="holiday"><span class="dot holiday"></span>Fiesta</button>
+          <button data-color="xxx"><span class="dot xxx"></span>XXX</button>
+        </div>
+        <button id="openBtn">Abrir</button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div id="months" class="months"></div>
+    <div id="status" class="status"></div>
+  </main>
+  <input id="fileInput" type="file" accept=".vconce,text/markdown,text/plain" hidden>
+  <div id="dayMenu" class="context-menu"></div>
+
+  <script>
+    const MONTHS = [["Septiembre",8],["Octubre",9],["Noviembre",10],["Diciembre",11],["Enero",0],["Febrero",1],["Marzo",2],["Abril",3],["Mayo",4],["Junio",5],["Julio",6]];
+    const WEEKDAYS = ["L","M","X","J","V","S","D"];
+    const DB_NAME = "GenericCalendarStore";
+    const DB_STORE = "handles";
+    const BACKUP_INTERVAL = 5 * 60 * 1000;
+    const OFFICIAL_HOLIDAYS = {
+      "2025-2026": [
+        ["2025-10-13","Fiesta nacional trasladada"],["2025-11-03","Dia no lectivo"],["2025-11-10","La Almudena"],["2025-12-06","Constitucion"],["2025-12-08","Inmaculada"],
+        ["2025-12-20","Navidad"],["2025-12-21","Navidad"],["2025-12-22","Navidad"],["2025-12-23","Navidad"],["2025-12-24","Navidad"],["2025-12-25","Navidad"],["2025-12-26","Navidad"],["2025-12-27","Navidad"],["2025-12-28","Navidad"],["2025-12-29","Navidad"],["2025-12-30","Navidad"],["2025-12-31","Navidad"],
+        ["2026-01-01","Navidad"],["2026-01-02","Navidad"],["2026-01-03","Navidad"],["2026-01-04","Navidad"],["2026-01-05","Navidad"],["2026-01-06","Navidad"],["2026-01-07","Dia no lectivo"],
+        ["2026-02-27","Dia no lectivo"],["2026-03-02","Dia no lectivo"],["2026-03-27","Semana Santa"],["2026-03-28","Semana Santa"],["2026-03-29","Semana Santa"],["2026-03-30","Semana Santa"],["2026-03-31","Semana Santa"],["2026-04-01","Semana Santa"],["2026-04-02","Jueves Santo"],["2026-04-03","Viernes Santo"],["2026-04-04","Semana Santa"],["2026-04-05","Semana Santa"],["2026-04-06","Semana Santa"],
+        ["2026-05-01","Fiesta del Trabajo"],["2026-05-02","Comunidad de Madrid"],["2026-05-15","San Isidro"]
+      ],
+      "2026-2027": [
+        ["2026-10-12","Fiesta Nacional"],["2026-11-02","Todos los Santos trasladado"],["2026-11-09","La Almudena"],["2026-12-07","Constitucion trasladada"],["2026-12-08","Inmaculada"],
+        ["2026-12-23","Navidad"],["2026-12-24","Navidad"],["2026-12-25","Navidad"],["2026-12-26","Navidad"],["2026-12-27","Navidad"],["2026-12-28","Navidad"],["2026-12-29","Navidad"],["2026-12-30","Navidad"],["2026-12-31","Navidad"],
+        ["2027-01-01","Navidad"],["2027-01-02","Navidad"],["2027-01-03","Navidad"],["2027-01-04","Navidad"],["2027-01-05","Navidad"],["2027-01-06","Navidad"],["2027-01-07","Dia no lectivo"],["2027-01-08","Dia no lectivo"],
+        ["2027-02-12","Dia no lectivo"],["2027-02-15","Dia no lectivo"],["2027-03-19","Dia no lectivo"],["2027-03-20","Semana Santa"],["2027-03-21","Semana Santa"],["2027-03-22","Semana Santa"],["2027-03-23","Semana Santa"],["2027-03-24","Semana Santa"],["2027-03-25","Semana Santa"],["2027-03-26","Semana Santa"],["2027-03-27","Semana Santa"],["2027-03-28","Semana Santa"],["2027-03-29","Dia no lectivo"]
+      ]
+    };
+
+    const state = {
+      currentYear: currentAcademicYear(),
+      subject: "Calendario",
+      entries: {},
+      holidays: {},
+      collapsedMonths: {},
+      fileName: "",
+      dirty: false
+    };
+    let activeColor = "blank";
+    let directoryHandle = null;
+    let fileHandle = null;
+    let draggedDay = null;
+    let backupTimer = null;
+
+    const $ = (id) => document.getElementById(id);
+    const pad = (n) => String(n).padStart(2, "0");
+    const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const parseIso = (s) => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+    const mondayIndex = (d) => (d.getDay() + 6) % 7;
+    const getYearStart = (year) => Number(year.slice(0, 4));
+    function currentAcademicYear(date = new Date()) {
+      const y = date.getFullYear();
+      const start = date.getMonth() >= 8 ? y : y - 1;
+      return `${start}-${start + 1}`;
+    }
+    function ensureYear(year) {
+      if (!state.entries[year]) state.entries[year] = {};
+      if (!state.holidays[year]) state.holidays[year] = Object.fromEntries((OFFICIAL_HOLIDAYS[year] || []).map(([d,n]) => [d,n]));
+      if (!state.collapsedMonths[year]) state.collapsedMonths[year] = defaultCollapsedMonths(year);
+    }
+    function defaultCollapsedMonths(year) {
+      const now = new Date();
+      const current = currentAcademicYear(now);
+      return Object.fromEntries(MONTHS.map(([,m]) => [String(m), !(year === current && m === now.getMonth())]));
+    }
+    function monthDates(academicYear, month) {
+      const startYear = getYearStart(academicYear);
+      const y = month >= 8 ? startYear : startYear + 1;
+      const first = new Date(y, month, 1);
+      const start = new Date(first);
+      start.setDate(first.getDate() - mondayIndex(first));
+      const last = new Date(y, month + 1, 0);
+      const end = new Date(last);
+      end.setDate(last.getDate() + (6 - mondayIndex(last)));
+      const dates = [];
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) dates.push(new Date(d));
+      return dates;
+    }
+    function render() {
+      ensureYear(state.currentYear);
+      $("subject").textContent = state.subject || "Calendario";
+      $("todayLine").textContent = new Intl.DateTimeFormat("es-ES", { dateStyle: "full" }).format(new Date());
+      $("fileStatus").textContent = state.fileName ? `${state.fileName} vinculado` : "Sin archivo vinculado";
+      buildYears();
+      const root = $("months");
+      root.innerHTML = "";
+      MONTHS.forEach(([name, month]) => {
+        const collapsed = !!state.collapsedMonths[state.currentYear][String(month)];
+        const section = document.createElement("section");
+        section.className = ["month", collapsed && "collapsed"].filter(Boolean).join(" ");
+        section.innerHTML = `<div class="month-head"><span>${collapsed ? "+" : "-"} ${name}</span><span>${state.currentYear}</span></div><div class="weekdays">${WEEKDAYS.map(d => `<div>${d}</div>`).join("")}</div><div class="grid"></div>`;
+        section.querySelector(".month-head").addEventListener("click", () => {
+          state.collapsedMonths[state.currentYear][String(month)] = !collapsed;
+          markDirty(false);
+          render();
+        });
+        const grid = section.querySelector(".grid");
+        if (!collapsed) renderMonth(grid, month);
+        root.appendChild(section);
+      });
+      updateStatus();
+    }
+    function buildYears() {
+      const now = getYearStart(currentAcademicYear());
+      const years = new Set([state.currentYear]);
+      Object.keys(state.entries || {}).forEach(y => years.add(y));
+      for (let y = now - 2; y <= now + 3; y++) years.add(`${y}-${y + 1}`);
+      $("yearSelect").innerHTML = [...years].sort().map(y => `<option value="${y}">${y}</option>`).join("");
+      $("yearSelect").value = state.currentYear;
+    }
+    function renderMonth(container, month) {
+      const dates = monthDates(state.currentYear, month);
+      for (let i = 0; i < dates.length; i += 7) {
+        const row = document.createElement("div");
+        row.className = "week-row";
+        dates.slice(i, i + 7).forEach((date, index) => row.appendChild(renderDay(date, month, index + 1)));
+        container.appendChild(row);
+      }
+    }
+    function renderDay(date, month, column) {
+      const key = iso(date);
+      const entry = state.entries[state.currentYear][key] || {};
+      const holiday = state.holidays[state.currentYear]?.[key];
+      const outside = date.getMonth() !== month;
+      const weekend = mondayIndex(date) >= 5;
+      const div = document.createElement("div");
+      div.className = ["day", outside && "outside", weekend && "weekend", holiday && "holiday", entry.color].filter(Boolean).join(" ");
+      div.dataset.date = key;
+      div.innerHTML = `<div class="day-cell day-top" style="grid-column:${column};grid-row:1" draggable="true"><span class="num">${date.getDate()}</span>${holiday ? `<span class="badge">${escapeHtml(holiday)}</span>` : ""}</div><textarea class="day-cell content" style="grid-column:${column};grid-row:2" data-field="content">${escapeHtml(entry.content || "")}</textarea><textarea class="day-cell problems" style="grid-column:${column};grid-row:3" data-field="problems">${escapeHtml(entry.problems || "")}</textarea>`;
+      div.addEventListener("click", (event) => {
+        if (event.target.tagName === "TEXTAREA") return;
+        if (activeColor !== "blank") {
+          setColor(key, activeColor);
+          return;
+        }
+        openDayMenu(key, event.clientX, event.clientY);
+      });
+      div.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        openDayMenu(key, event.clientX, event.clientY);
+      });
+      const top = div.querySelector(".day-top");
+      top.addEventListener("dragstart", (event) => {
+        draggedDay = key;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", key);
+      });
+      top.addEventListener("dragover", (event) => {
+        const source = draggedDay || event.dataTransfer.getData("text/plain");
+        if (!source || source === key) return;
+        event.preventDefault();
+        div.classList.add("drop-over");
+      });
+      top.addEventListener("dragleave", () => div.classList.remove("drop-over"));
+      top.addEventListener("drop", (event) => {
+        event.preventDefault();
+        div.classList.remove("drop-over");
+        moveDay(draggedDay || event.dataTransfer.getData("text/plain"), key);
+        draggedDay = null;
+      });
+      top.addEventListener("dragend", () => {
+        draggedDay = null;
+        document.querySelectorAll(".drop-over").forEach(el => el.classList.remove("drop-over"));
+      });
+      div.querySelectorAll("textarea").forEach(area => {
+        area.addEventListener("input", () => {
+          const rec = getEntry(key);
+          rec[area.dataset.field] = area.value;
+          autoResize(area);
+          markDirty();
+        });
+      });
+      requestAnimationFrame(() => div.querySelectorAll("textarea").forEach(autoResize));
+      return div;
+    }
+    function autoResize(area) {
+      area.style.height = "auto";
+      area.style.height = `${Math.max(area.scrollHeight + 2, area.classList.contains("problems") ? 18 : 54)}px`;
+    }
+    function getEntry(key) {
+      ensureYear(state.currentYear);
+      if (!state.entries[state.currentYear][key]) state.entries[state.currentYear][key] = {};
+      return state.entries[state.currentYear][key];
+    }
+    function setColor(key, color) {
+      const rec = getEntry(key);
+      if (color === "blank") delete rec.color;
+      else rec.color = color;
+      markDirty();
+      render();
+    }
+    function moveDay(source, target) {
+      if (!source || !target || source === target) return;
+      ensureYear(state.currentYear);
+      const entries = state.entries[state.currentYear];
+      entries[target] = structuredClone(entries[source] || {});
+      delete entries[source];
+      markDirty();
+      render();
+      updateStatus(`Dia movido de ${source} a ${target}.`);
+    }
+    function openDayMenu(key, x, y) {
+      const menu = $("dayMenu");
+      menu.innerHTML = `<button data-color="blank"><span class="dot blank"></span>Normal</button><button data-color="exercise"><span class="dot exercise"></span>Ejercicios</button><button data-color="exam"><span class="dot exam"></span>Examen</button><button data-color="holiday"><span class="dot holiday"></span>Fiesta</button><button data-color="xxx"><span class="dot xxx"></span>XXX</button><button data-action="clear">Borrar dia</button>`;
+      menu.querySelectorAll("[data-color]").forEach(button => button.addEventListener("click", () => {
+        setColor(key, button.dataset.color);
+        closeMenu();
+      }));
+      menu.querySelector("[data-action='clear']").addEventListener("click", () => {
+        delete state.entries[state.currentYear][key];
+        markDirty();
+        closeMenu();
+        render();
+      });
+      menu.style.left = `${Math.min(x, window.innerWidth - 200)}px`;
+      menu.style.top = `${Math.min(y, window.innerHeight - 220)}px`;
+      menu.classList.add("open");
+    }
+    function closeMenu() { $("dayMenu").classList.remove("open"); }
+    function clearAll() {
+      if (!confirm("Limpiar todo el contenido editable de todos los cursos de este archivo?")) return;
+      state.entries = {};
+      ensureYear(state.currentYear);
+      markDirty();
+      render();
+    }
+    function markDirty(scheduleBackup = true) {
+      state.dirty = true;
+      $("saveStatus").textContent = "sin guardar";
+      localStorage.setItem("GenericCalendar.recovery", serialize());
+      if (scheduleBackup) scheduleBackupSave();
+    }
+    function updateStatus(text = "") {
+      $("status").textContent = text || (state.dirty ? "Cambios pendientes" : "guardado");
+      $("saveStatus").textContent = state.dirty ? "sin guardar" : "guardado";
+    }
+    function snapshot() {
+      return {
+        version: 1,
+        subject: state.subject,
+        currentYear: state.currentYear,
+        entries: state.entries,
+        holidays: state.holidays,
+        collapsedMonths: state.collapsedMonths,
+        fileName: state.fileName,
+        saved: new Date().toISOString()
+      };
+    }
+    function serialize() {
+      return `---\ntype: GenericCalendar\nversion: 1\nsaved: ${new Date().toISOString()}\n---\n\n# Calendario\n\n\`\`\`json\n${JSON.stringify(snapshot(), null, 2)}\n\`\`\`\n`;
+    }
+    function loadText(text, name = "") {
+      const match = text.match(/```json\s*([\s\S]*?)```/);
+      const data = JSON.parse(match ? match[1] : text);
+      state.subject = data.subject || "Calendario";
+      state.currentYear = data.currentYear || currentAcademicYear();
+      state.entries = data.entries || {};
+      state.holidays = data.holidays || {};
+      state.collapsedMonths = data.collapsedMonths || {};
+      state.fileName = name || data.fileName || state.fileName;
+      state.dirty = false;
+      render();
+    }
+    async function chooseSaveTarget() {
+      if (!("showDirectoryPicker" in window)) {
+        downloadText(serialize(), state.fileName || "GenericCalendar.vconce");
+        downloadText(serialize(), "BK.vconce");
+        updateStatus("Tu navegador no permite vincular carpeta; se han descargado copias.");
+        return;
+      }
+      directoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+      const suggested = state.fileName || prompt("Nombre del archivo .vconce", "GenericCalendar.vconce") || "GenericCalendar.vconce";
+      state.fileName = suggested.toLowerCase().endsWith(".vconce") ? suggested : `${suggested}.vconce`;
+      fileHandle = await directoryHandle.getFileHandle(state.fileName, { create: true });
+      await saveHandleRecord();
+      await saveNow();
+    }
+    async function saveNow() {
+      state.subject = $("subject").textContent.trim() || "Calendario";
+      if (!fileHandle) {
+        await chooseSaveTarget();
+        return;
+      }
+      const writable = await fileHandle.createWritable();
+      await writable.write(serialize());
+      await writable.close();
+      state.dirty = false;
+      updateStatus("guardado");
+      await writeBackup("BK.vconce");
+      await writeBackup(backupFileName());
+    }
+    function backupFileName() {
+      const name = state.fileName || "GenericCalendar.vconce";
+      return name.replace(/\.vconce$/i, "") + "_BK.vconce";
+    }
+    async function writeBackup(name) {
+      try {
+        if (!directoryHandle) return;
+        const backup = await directoryHandle.getFileHandle(name, { create: true });
+        const writable = await backup.createWritable();
+        await writable.write(serialize());
+        await writable.close();
+      } catch {
+        localStorage.setItem("GenericCalendar.BK", serialize());
+      }
+    }
+    function scheduleBackupSave() {
+      if (backupTimer) return;
+      backupTimer = setTimeout(async () => {
+        backupTimer = null;
+        await writeBackup(backupFileName());
+      }, BACKUP_INTERVAL);
+    }
+    function downloadText(text, name) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([text], { type: "text/markdown;charset=utf-8" }));
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    function openFile() {
+      if ("showOpenFilePicker" in window) openPicker();
+      else $("fileInput").click();
+    }
+    async function openPicker() {
+      const [handle] = await window.showOpenFilePicker({ types: [{ description: "Calendario", accept: { "text/markdown": [".vconce", ".md"] } }], multiple: false });
+      fileHandle = handle;
+      const file = await handle.getFile();
+      loadText(await file.text(), file.name);
+      await saveHandleRecord();
+    }
+    function openDb() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = () => request.result.createObjectStore(DB_STORE);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+    async function idbSet(key, value) {
+      const db = await openDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(DB_STORE, "readwrite");
+        tx.objectStore(DB_STORE).put(value, key);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+      });
+      db.close();
+    }
+    async function idbGet(key) {
+      const db = await openDb();
+      const value = await new Promise((resolve, reject) => {
+        const tx = db.transaction(DB_STORE, "readonly");
+        const request = tx.objectStore(DB_STORE).get(key);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      db.close();
+      return value;
+    }
+    async function saveHandleRecord() {
+      if (!("indexedDB" in window)) return;
+      await idbSet("record", { directoryHandle, fileHandle, fileName: state.fileName });
+    }
+    async function autoLoad() {
+      ensureYear(state.currentYear);
+      let record = null;
+      try {
+        record = "indexedDB" in window ? await idbGet("record") : null;
+        if (record?.fileHandle) {
+          fileHandle = record.fileHandle;
+          directoryHandle = record.directoryHandle || null;
+          state.fileName = record.fileName || "";
+          const permission = await fileHandle.queryPermission?.({ mode: "readwrite" });
+          if (permission === "granted" || await fileHandle.requestPermission?.({ mode: "readwrite" }) === "granted") {
+            const file = await fileHandle.getFile();
+            loadText(await file.text(), file.name);
+            return;
+          }
+        }
+        render();
+      } catch {
+        if (record?.directoryHandle && await loadFromRememberedDirectory(record.directoryHandle)) return;
+        const recovery = localStorage.getItem("GenericCalendar.recovery");
+        if (recovery && confirm("No se encontro el ultimo archivo. Cargar copia local de recuperacion?")) loadText(recovery, "recuperacion local");
+        else render();
+      }
+    }
+    async function loadFromRememberedDirectory(dir) {
+      try {
+        const permission = await dir.queryPermission?.({ mode: "readwrite" });
+        if (permission !== "granted" && await dir.requestPermission?.({ mode: "readwrite" }) !== "granted") return false;
+        const candidates = [];
+        for await (const [name, handle] of dir.entries()) {
+          if (handle.kind === "file" && name.toLowerCase().endsWith(".vconce")) candidates.push({ name, handle });
+        }
+        if (!candidates.length) return false;
+        candidates.sort((a, b) => {
+          const aBackup = /(^BK\.vconce$|_BK\.vconce$)/i.test(a.name);
+          const bBackup = /(^BK\.vconce$|_BK\.vconce$)/i.test(b.name);
+          return Number(aBackup) - Number(bBackup) || a.name.localeCompare(b.name);
+        });
+        let chosen = candidates[0];
+        if (candidates.length > 1) {
+          const list = candidates.map((item, index) => `${index + 1}. ${item.name}`).join("\n");
+          const pick = Number(prompt(`Hay varios archivos .vconce. Escribe el numero que quieres cargar:\n${list}`, "1"));
+          chosen = candidates[Math.max(0, Math.min(candidates.length - 1, pick - 1))];
+        }
+        directoryHandle = dir;
+        fileHandle = chosen.handle;
+        state.fileName = chosen.name;
+        const file = await fileHandle.getFile();
+        loadText(await file.text(), file.name);
+        await saveHandleRecord();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[ch]));
+    }
+
+    $("subject").addEventListener("input", () => {
+      state.subject = $("subject").textContent.trim() || "Calendario";
+      markDirty();
+    });
+    $("yearSelect").addEventListener("change", () => {
+      state.currentYear = $("yearSelect").value;
+      ensureYear(state.currentYear);
+      markDirty(false);
+      render();
+    });
+    $("diskBtn").addEventListener("click", saveNow);
+    $("openBtn").addEventListener("click", openFile);
+    $("fileInput").addEventListener("change", async event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      loadText(await file.text(), file.name);
+      event.target.value = "";
+    });
+    $("clearAllBtn").addEventListener("click", clearAll);
+    $("expandAllBtn").addEventListener("click", () => {
+      ensureYear(state.currentYear);
+      MONTHS.forEach(([,m]) => state.collapsedMonths[state.currentYear][String(m)] = false);
+      markDirty(false);
+      render();
+    });
+    $("todayBtn").addEventListener("click", () => {
+      state.currentYear = currentAcademicYear();
+      ensureYear(state.currentYear);
+      state.collapsedMonths[state.currentYear] = defaultCollapsedMonths(state.currentYear);
+      render();
+    });
+    document.querySelectorAll("[data-color]").forEach(button => button.addEventListener("click", () => {
+      activeColor = button.dataset.color;
+      document.querySelectorAll("[data-color]").forEach(b => b.classList.toggle("active", b === button));
+    }));
+    document.addEventListener("click", event => {
+      if (!event.target.closest("#dayMenu") && !event.target.closest(".day-top")) closeMenu();
+    });
+    window.addEventListener("beforeunload", event => {
+      if (!state.dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+    setInterval(() => writeBackup(backupFileName()), BACKUP_INTERVAL);
+    autoLoad();
+  </script>
+</body>
+</html>
