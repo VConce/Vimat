@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verificador offline de DNI</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="app-title">
+        <div>
+          <p class="eyebrow">Procesamiento local</p>
+          <h1 id="app-title">Verificador offline de DNI</h1>
+        </div>
+        <div class="status-pill" id="privacy-status">Sin conexión externa</div>
+      </section>
+
+      <section class="workspace">
+        <div class="upload-panel">
+          <label class="dropzone" id="dropzone">
+            <input id="file-input" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff,.heic,.heif,image/*,application/pdf">
+            <span class="drop-icon" aria-hidden="true">+</span>
+            <span class="drop-title">Arrastra DNI aquí</span>
+            <span class="drop-meta">PDF, PNG, JPG, WEBP, BMP, TIFF, HEIC</span>
+          </label>
+
+          <div class="actions">
+            <button type="button" id="check-button" class="primary-button" disabled>Comprobar</button>
+            <button type="button" id="clear-button" class="ghost-button" disabled>Vaciar</button>
+          </div>
+
+          <div class="progress-wrap" aria-live="polite">
+            <div class="progress-label">
+              <span id="progress-text">Sin documentos</span>
+              <span id="progress-percent">0%</span>
+            </div>
+            <progress id="progress-bar" max="100" value="0"></progress>
+          </div>
+        </div>
+
+        <div class="queue-panel">
+          <div class="panel-header">
+            <h2>Documentos cargados</h2>
+            <span id="file-count">0 archivos</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Archivo</th>
+                  <th>Cara</th>
+                  <th>Formato</th>
+                  <th>Tamaño</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="queue-body">
+                <tr class="empty-row">
+                  <td colspan="5">No hay documentos cargados.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="results-panel" id="results-panel" hidden>
+        <div class="panel-header">
+          <h2>Informe</h2>
+          <div class="report-actions">
+            <button type="button" id="download-html" class="ghost-button">HTML</button>
+            <button type="button" id="download-csv" class="ghost-button">CSV</button>
+            <button type="button" id="download-json" class="ghost-button">JSON</button>
+          </div>
+        </div>
+
+        <div class="summary-grid" id="summary-grid"></div>
+
+        <div class="table-wrap result-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Veredicto</th>
+                <th>Puntuación</th>
+                <th>Señales principales</th>
+              </tr>
+            </thead>
+            <tbody id="result-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <template id="side-select-template">
+      <select class="side-select" aria-label="Cara del DNI">
+        <option value="auto">Automático</option>
+        <option value="front">Frente</option>
+        <option value="back">Reverso</option>
+        <option value="both">Frente y reverso</option>
+        <option value="unknown">Sin asignar</option>
+      </select>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
